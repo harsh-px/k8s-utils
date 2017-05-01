@@ -1,0 +1,25 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+   name: node-list-role
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "watch", "list"]
+
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: node-list-binding
+subjects:
+- apiVersion: v1
+  kind: ServiceAccount
+  name: persistent-volume-binder
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: node-list-role
+  apiGroup: rbac.authorization.k8s.io

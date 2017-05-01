@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+    name: test
+spec:
+    capacity:
+      storage: 2Gi
+    accessModes:
+      - ReadWriteOnce
+    persistentVolumeReclaimPolicy: Retain
+    portworxVolume:
+      volumeID: test
+      fsType:   ext4
