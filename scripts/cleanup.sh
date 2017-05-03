@@ -12,7 +12,5 @@ docker rm $(docker ps -a -q  --filter ancestor=harshpx/px:latest)
 docker stop $(docker ps -a -q --filter ancestor=portworx/etcd:latest)
 docker rm $(docker ps -a -q  --filter ancestor=portworx/etcd:latest)
 
-sudo rm -rf /etc/pwx/.private.json /etc/pwx/config.json
-
-#docker rmi harshpx/px
+sudo rm -rf /etc/pwx
 docker system prune -f
