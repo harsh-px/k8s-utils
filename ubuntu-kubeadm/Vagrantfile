@@ -58,7 +58,9 @@ echo "***** Setting up Flannel network"
 export KUBECONFIG=$HOME/admin.conf
 
 curl -O https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel-rbac.yml && kubectl apply -f kube-flannel-rbac.yml
-curl -O https://gist.githubusercontent.com/komljen/d0bcf9e4ab93d5915b7ecf2b15021411/raw/b2c6a616588f90937736adf9ec086f220d731a5f/kube-flannel.yml && kubectl apply -f kube-flannel.yml
+curl -O https://gist.githubusercontent.com/komljen/d0bcf9e4ab93d5915b7ecf2b15021411/raw/b2c6a616588f90937736adf9ec086f220d731a5f/kube-flannel.yml
+sed -i "s/0.7.0/0.7.1/g" kube-flannel.yml
+kubectl apply -f kube-flannel.yml
 SCRIPT
 
 $device_setup = <<SCRIPT
