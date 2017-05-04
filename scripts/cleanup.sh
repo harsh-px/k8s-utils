@@ -1,18 +1,17 @@
 #!/bin/bash
 
-docker stop $(docker ps -a -q --filter ancestor=portworx/px-enterprise:latest)
-docker rm $(docker ps -a -q --filter ancestor=portworx/px-enterprise:latest)
+IMAGES_TO_CLEAN=(
+	"portworx/px-dev:latesat"
+	"harshpx/px:latest"
+	"192.168.33.1:5000/harshpx/px:latest"
+	"portworx/px-enterprise:latest"
+)
 
-docker stop $(docker ps -a -q --filter ancestor=portworx/px-dev:latest)
-docker rm $(docker ps -a -q  --filter ancestor=portworx/px-dev:latest)
+for IMG in "${IMAGES_TO_CLEAN[@]}"
+do
+	docker stop $(docker ps -a -q --filter ancestor=${IMG}) 2>/dev/null
+	docker rm $(docker ps -a -q --filter ancestor=${IMG}) 2>/dev/null
+done
 
-docker stop $(docker ps -a -q --filter ancestor=harshpx/px:latest)
-docker rm $(docker ps -a -q  --filter ancestor=harshpx/px:latest)
-
-docker stop $(docker ps -a -q --filter ancestor=portworx/etcd:latest)
-docker rm $(docker ps -a -q  --filter ancestor=portworx/etcd:latest)
-
-docker stop $(docker ps -a -q --filter ancestor=192.168.33.1:5000/harshpx/px:latest)
-docker rm $(docker ps -a -q  --filter ancestor=192.168.33.1:5000/harshpx/px:latest)
 sudo rm -rf /etc/pwx
 docker system prune -f
