@@ -1,7 +1,8 @@
 #!/bin/bash
 
 IMAGES_TO_CLEAN=(
-	"portworx/px-dev:latesat"
+    "portworx/etcd:latest"
+    "portworx/px-dev:latest"
 	"harshpx/px:latest"
 	"192.168.33.1:5000/harshpx/px:latest"
 	"portworx/px-enterprise:latest"
