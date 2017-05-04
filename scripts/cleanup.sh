@@ -14,4 +14,4 @@ do
 done
 
 sudo rm -rf /etc/pwx
-docker system prune -f
+docker system prune -f 2>/dev/null
