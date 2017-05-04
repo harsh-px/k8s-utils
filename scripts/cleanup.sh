@@ -3,8 +3,8 @@
 IMAGES_TO_CLEAN=(
     "portworx/etcd:latest"
     "portworx/px-dev:latest"
-	"harshpx/px:latest"
-	"192.168.33.1:5000/harshpx/px:latest"
+	"harshpx/px:dev"
+	"192.168.33.1:5000/harshpx/px:dev"
 	"portworx/px-enterprise:latest"
 )
 
