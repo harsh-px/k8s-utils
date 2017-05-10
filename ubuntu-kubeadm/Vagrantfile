@@ -6,10 +6,6 @@ require 'tempfile'
 NODE_COUNT    = 1
 MASTER_NAME   = "master"                                                 
 MINION_PREFIX = "minion-" 
-K8S_REPO_SRC  = '/home/harsh/work/src/k8s.io/kubernetes/'                       
-K8S_REPO_DST  = '/root/kube-stage/'                                             
-SCRIPTS_SRC   = '/home/harsh/work/scripts/k8s/'                                 
-SCRIPTS_DST   = '/root/scripts/'     
 SUBNET        = '192.168.33'
 
 $common_setup = <<SCRIPT
@@ -18,15 +14,6 @@ SUBNET=$2
 MASTER_NAME=$3                                                                  
 MINION_PREFIX=$4                                                                
                      
-#echo "***** Updating hosts file"                                                
-#base=10                                                                         
-#echo "${SUBNET}.${base}    ${MASTER_NAME}" >> /etc/hosts                        
-#for i in $(seq 1 ${NODE_COUNT});                                                
-#do                                                                              
-#    nid="$(($base+$i))"                                                         
-#	echo "${SUBNET}.${nid}     ${MINION_PREFIX}${i}" >> /etc/hosts              
-#done      
-
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 apt-get update && sudo apt-get install -y docker-engine kubelet kubeadm kubectl kubernetes-cni vim git
@@ -72,8 +59,6 @@ SCRIPT
 
 Vagrant.configure("2") do |config|
     config.vm.box = "ubuntu/xenial64"
-    config.vm.synced_folder "#{K8S_REPO_SRC}", "#{K8S_REPO_DST}"                
-	config.vm.synced_folder "#{SCRIPTS_SRC}", "#{SCRIPTS_DST}"
     config.vm.boot_timeout = 600
 
     config.vm.provider "virtualbox" do |v|
@@ -166,6 +151,23 @@ Vagrant.configure("2") do |config|
   		end 
 	end
 
+	config.vm.define "minion-4" do |subconfig|
+		subconfig.vm.hostname = "minion-4"
+		subconfig.vm.network :private_network, ip: "#{SUBNET}.14"
+		subconfig.vm.provision :shell, inline: "sed 's/127\.0\.0\.1.*minion-4.*/192\.168\.33\.14 minion-4/' -i /etc/hosts"
+
+  		subconfig.vm.provision "shell" do |s4|                                   
+  			s4.inline = $device_setup                                            
+			s4.name = "loop0_dev"
+			s4.privileged = true                                                 
+  		end 
+
+  		subconfig.vm.provision "shell" do |s5|                                   
+  			s5.inline = $kubeadm_join                                            
+			s5.name = "kubeadm_join"
+			s5.privileged = true                                                 
+  		end 
+	end
  
 	#(1..NODE_COUNT).each do |i|  
 	#	config.vm.define "#{MINION_PREFIX}#{i}" do |subconfig|
