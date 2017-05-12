@@ -5,7 +5,7 @@ metadata:
     name: portworx-io-priority-high
 provisioner: kubernetes.io/portworx-volume
 parameters:
-   repl: "1"
+   repl: "2"
    snap_interval:   "70"
    io_priority:  "high"
 
@@ -105,7 +105,6 @@ spec:
           mountPath: /cassandra_data
   # These are converted to volume claims by the controller
   # and mounted at the paths mentioned above.
-  # do not use these in production until ssd GCEPersistentDisk or other ssd pd
   volumeClaimTemplates:
   - metadata:
       name: cassandra-data
@@ -116,3 +115,5 @@ spec:
       resources:
         requests:
           storage: 1Gi
+
+
