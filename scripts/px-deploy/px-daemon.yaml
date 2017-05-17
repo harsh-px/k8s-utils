@@ -1,3 +1,41 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-account
+  namespace: default
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: px-account
+  annotations:
+    kubernetes.io/service-account.name: px-account
+type: kubernetes.io/service-account-token
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+   name: node-get-put-list-role
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "update", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: node-role-binding
+subjects:
+- apiVersion: v1
+  kind: ServiceAccount
+  name: px-account
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: node-get-put-list-role
+  apiGroup: rbac.authorization.k8s.io
+---
+
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
@@ -50,10 +88,17 @@ spec:
               mountPath: /usr/src
             - name: dockerplugins
               mountPath: /run/docker/plugins
+            - name: px-account-secret
+              mountPath: /mnt/px-account-secret
+              readOnly: true
           resources:
             requests:
               cpu: 10m
       restartPolicy: Always
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      serviceAccountName: px-account
       volumes:
         - name: libosd
           hostPath:
@@ -82,3 +127,6 @@ spec:
         - name: dockersock
           hostPath:
             path: /var/run/docker.sock
+        - name: px-account-secret
+          secret:
+            secretName: px-account
