@@ -1,0 +1,84 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: portworx
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        name: portworx
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - name: portworx
+          image: portworx/px-enteprise
+          imagePullPolicy: Always
+          command:
+            - -daemon
+          args:
+             [" -k etcd://192.168.33.10:4001",
+              "-c mycluster",
+              "-d enp0s8",
+              "-m enp0s8",
+               "-a", "-f", "-x", "kubernetes"]
+          livenessProbe:
+            initialDelaySeconds: 840
+            httpGet:
+              host: 127.0.0.1
+              path: /status
+              port: 9001
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+            - name: libosd
+              mountPath: /var/lib/osd:shared
+            - name: dev
+              mountPath: /dev
+            - name: etcpwx
+              mountPath: /etc/pwx/
+            - name: optpwx
+              mountPath: /opt/pwx/bin
+            - name: cores
+              mountPath: /var/cores
+            - name: kubelet
+              mountPath: /var/lib/kubelet:shared
+            - name: src
+              mountPath: /usr/src
+            - name: dockerplugins
+              mountPath: /run/docker/plugins
+          resources:
+            requests:
+              cpu: 10m
+      restartPolicy: Always
+      volumes:
+        - name: libosd
+          hostPath:
+            path: /var/lib/osd
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: etcpwx
+          hostPath:
+            path: /etc/pwx
+        - name: optpwx
+          hostPath:
+            path: /opt/pwx/bin
+        - name: cores
+          hostPath:
+            path: /var/cores
+        - name: kubelet
+          hostPath:
+            path: /var/lib/kubelet
+        - name: src
+          hostPath:
+            path: /usr/src
+        - name: dockerplugins
+          hostPath:
+            path: /run/docker/plugins
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock

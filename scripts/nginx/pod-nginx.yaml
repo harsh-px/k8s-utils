@@ -1,7 +1,23 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: ngnix
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+
 apiVersion: v1
 kind: Pod
 metadata:
   name: nginx
+  labels:
+    app: ngnix
 spec:
   containers:
   - name: nginx

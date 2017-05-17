@@ -99,14 +99,6 @@ Vagrant.configure("2") do |config|
 		subconfig.vm.network :private_network, ip: "#{SUBNET}.11"
 		subconfig.vm.provision :shell, inline: "sed 's/127\.0\.0\.1.*minion-1.*/192\.168\.33\.11 minion-1/' -i /etc/hosts"
         
-		#subconfig.vm.provider "virtualbox" do |v|
-		#  disk_name = "minion-1-#{file_to_disk}"
-		#  unless File.exist?(disk_name)
-		#    v.customize ['createhd', '--filename', disk_name, '--size', 3 * 1024 * 1024]
-		#  end
-		#  v.customize ['storageattach', :id, '--storagectl', 'SCSI Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk_name]
-		#end
-
   		subconfig.vm.provision "shell" do |s5|                                   
   			s5.inline = $kubeadm_join                                            
 			s5.name = "kubeadm_join"
@@ -119,14 +111,6 @@ Vagrant.configure("2") do |config|
 		subconfig.vm.network :private_network, ip: "#{SUBNET}.12"
 		subconfig.vm.provision :shell, inline: "sed 's/127\.0\.0\.1.*minion-2.*/192\.168\.33\.12 minion-2/' -i /etc/hosts"
 
-#		subconfig.vm.provider "virtualbox" do |v|
-#	      disk_name = "minion-2-#{file_to_disk}"
-#		  unless File.exist?(disk_name)
-#	        v.customize ['createhd', '--filename', disk_name, '--size', 3 * 1024 * 1024]
-#	      end
-#		  v.customize ['storageattach', :id, '--storagectl', 'SCSI Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk_name]
-#        end
-  		
 		subconfig.vm.provision "shell" do |s5|                                   
   			s5.inline = $kubeadm_join                                            
 			s5.name = "kubeadm_join"
@@ -139,14 +123,6 @@ Vagrant.configure("2") do |config|
 		subconfig.vm.network :private_network, ip: "#{SUBNET}.13"
 		subconfig.vm.provision :shell, inline: "sed 's/127\.0\.0\.1.*minion-3.*/192\.168\.33\.13 minion-3/' -i /etc/hosts"
 
-#		subconfig.vm.provider "virtualbox" do |v|
-#	      disk_name = "minion-3-#{file_to_disk}"
-#		  unless File.exist?(disk_name)
-#	        v.customize ['createhd', '--filename', disk_name, '--size', 3 * 1024 * 1024]
-#	      end
-#		  v.customize ['storageattach', :id, '--storagectl', 'SCSI Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk_name]
-#        end
-  		
 		subconfig.vm.provision "shell" do |s5|                                   
   			s5.inline = $kubeadm_join                                            
 			s5.name = "kubeadm_join"
@@ -154,10 +130,10 @@ Vagrant.configure("2") do |config|
   		end 
 	end
 
-	config.vm.define "minion-4" do |subconfig|
-		subconfig.vm.hostname = "minion-4"
-		subconfig.vm.network :private_network, ip: "#{SUBNET}.14"
-		subconfig.vm.provision :shell, inline: "sed 's/127\.0\.0\.1.*minion-4.*/192\.168\.33\.14 minion-4/' -i /etc/hosts"
+#	config.vm.define "minion-4" do |subconfig|
+#		subconfig.vm.hostname = "minion-4"
+#		subconfig.vm.network :private_network, ip: "#{SUBNET}.14"
+#		subconfig.vm.provision :shell, inline: "sed 's/127\.0\.0\.1.*minion-4.*/192\.168\.33\.14 minion-4/' -i /etc/hosts"
 
 #subconfig.vm.provider "virtualbox" do |v|
 #	      disk_name = "minion-4-#{file_to_disk}"
@@ -167,12 +143,12 @@ Vagrant.configure("2") do |config|
 #		  v.customize ['storageattach', :id, '--storagectl', 'SCSI Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk_name]
 #        end
   		
-		subconfig.vm.provision "shell" do |s5|                                   
-  			s5.inline = $kubeadm_join                                            
-			s5.name = "kubeadm_join"
-			s5.privileged = true                                                 
-  		end 
-	end
+#		subconfig.vm.provision "shell" do |s5|                                   
+#  			s5.inline = $kubeadm_join                                            
+#			s5.name = "kubeadm_join"
+#			s5.privileged = true                                                 
+#  		end 
+#	end
  
 	(1..NODE_COUNT).each do |i|  
         config.vm.define "#{MINION_PREFIX}#{i}" do |subconfig|
