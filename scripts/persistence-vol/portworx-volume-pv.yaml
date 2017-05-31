@@ -11,3 +11,32 @@ spec:
     portworxVolume:
       volumeID: test
       fsType:   ext4
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc0001
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvpod
+spec:
+  containers:
+  - name: test-container
+    image: gcr.io/google_containers/test-webserver
+    volumeMounts:
+    - name: test-volume
+      mountPath: /test-portworx-volume
+  volumes:
+  - name: test-volume
+    persistentVolumeClaim:
+      claimName: pvc0001

@@ -3,7 +3,7 @@
 require 'fileutils'                                                             
 require 'tempfile'  
 
-NODE_COUNT    = 4
+NODE_COUNT    = 3
 MASTER_NAME   = "master"                                                 
 MINION_PREFIX = "minion-" 
 SUBNET        = '192.168.33'
@@ -26,11 +26,13 @@ service docker restart
 SCRIPT
 
 $kubeadm_init = <<SCRIPT
-KUBE_HYPERKUBE_IMAGE=192.168.33.1:5000/hyperkube-amd64:1.7.4 kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
+#KUBE_HYPERKUBE_IMAGE=192.168.33.1:5000/hyperkube-amd64:1.7.4 kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
+kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
 SCRIPT
 
 $kubeadm_join = <<SCRIPT
-KUBE_HYPERKUBE_IMAGE=192.168.33.1:5000/hyperkube-amd64:1.7.4 kubeadm join --token 8c2350.f55343444a6ffc46 192.168.33.10:6443
+#KUBE_HYPERKUBE_IMAGE=192.168.33.1:5000/hyperkube-amd64:1.7.4 kubeadm join --token 8c2350.f55343444a6ffc46 192.168.33.10:6443
+kubeadm join --token 8c2350.f55343444a6ffc46 192.168.33.10:6443
 SCRIPT
 
 $kubeconfig_setup = <<SCRIPT
@@ -45,7 +47,7 @@ echo "***** Setting up Flannel network"
 export KUBECONFIG=$HOME/admin.conf
 
 curl -O https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel-rbac.yml && kubectl apply -f kube-flannel-rbac.yml
-curl -O https://gist.githubusercontent.com/komljen/d0bcf9e4ab93d5915b7ecf2b15021411/raw/b2c6a616588f90937736adf9ec086f220d731a5f/kube-flannel.yml
+curl -O https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 sed -i "s/0.7.0/0.7.1/g" kube-flannel.yml
 kubectl apply -f kube-flannel.yml
 SCRIPT
@@ -157,7 +159,7 @@ Vagrant.configure("2") do |config|
 		    unless File.exist?(disk_name)
 	          v.customize ['createhd', '--filename', disk_name, '--size', 3076]
 	        end
-		    v.customize ['storageattach', :id, '--storagectl', 'SCSI Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', disk_name]
+		    v.customize ['storageattach', :id, '--storagectl', 'SCSI', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', disk_name]
           end
 	    end
 	end

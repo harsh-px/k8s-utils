@@ -11,5 +11,5 @@ docker run --restart=always --name px-dev -d --net=host \
     -v /var/run/docker.sock:/var/run/docker.sock  \
     -v /var/cores:/var/cores                      \
     -v /usr/src:/usr/src                          \
-    harshpx/px:latest -daemon -k etcd://localhost:4001 -c harsh-k8s-cluster -s /dev/loop0 
+    harshpx/px:latest -daemon -k etcd://localhost:4001 -c harsh-k8s-cluster -a -f
     #portworx/px-dev:latest
