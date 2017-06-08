@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-docker run --restart=always --name px-dev -d --net=host \
+docker run --restart=always --name px -d --net=host \
     --privileged=true                             \
     -v /run/docker/plugins:/run/docker/plugins    \
     -v /var/lib/osd:/var/lib/osd:shared           \
@@ -11,5 +11,5 @@ docker run --restart=always --name px-dev -d --net=host \
     -v /var/run/docker.sock:/var/run/docker.sock  \
     -v /var/cores:/var/cores                      \
     -v /usr/src:/usr/src                          \
-    harshpx/px:latest -daemon -k etcd://localhost:4001 -c harsh-k8s-cluster -a -f
+    localhost:5000/harshpx/px:dev -daemon -k etcd://localhost:4001 -c harsh-local-cluster -s /dev/loop0
     #portworx/px-dev:latest

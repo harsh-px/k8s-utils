@@ -11,7 +11,7 @@ IMAGES_TO_CLEAN=(
 for IMG in "${IMAGES_TO_CLEAN[@]}"
 do
 	docker stop $(docker ps -a -q --filter ancestor=${IMG}) 2>/dev/null
-	docker rm $(docker ps -a -q --filter ancestor=${IMG}) 2>/dev/null
+	docker rm -f $(docker ps -a -q --filter ancestor=${IMG}) 2>/dev/null
 done
 
 sudo rm -rf /etc/pwx
