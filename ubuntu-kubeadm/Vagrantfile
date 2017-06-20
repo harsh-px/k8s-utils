@@ -18,7 +18,7 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 apt-get update && sudo apt-get install -y docker-engine kubelet kubeadm kubectl kubernetes-cni vim git
 
-#sed -i s/MountFlags=slave//g /lib/systemd/system/docker.service
+sed -i s/MountFlags=slave//g /lib/systemd/system/docker.service
 sed -i 's/ExecStart=\\\/usr\\\/bin\\\/docker/ExecStart=\\\/usr\\\/bin\\\/docker --insecure-registry 192.168.33.1:5000/g' /lib/systemd/system/docker.service 
 systemctl daemon-reload
 service docker restart
@@ -26,7 +26,7 @@ service docker restart
 SCRIPT
 
 $kubeadm_init = <<SCRIPT
-#KUBE_HYPERKUBE_IMAGE=192.168.33.1:5000/hyperkube-amd64:1.7.4 kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
+#KUBE_HYPERKUBE_IMAGE=192.168.33.1:5000/hyperkube:1.7.4 kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
 kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
 SCRIPT
 

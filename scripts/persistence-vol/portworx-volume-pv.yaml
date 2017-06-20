@@ -9,7 +9,7 @@ spec:
       - ReadWriteOnce
     persistentVolumeReclaimPolicy: Retain
     portworxVolume:
-      volumeID: test
+      volumeID: testvol
       fsType:   ext4
 ---
 
@@ -22,7 +22,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi
 
 ---
 apiVersion: v1
@@ -34,9 +34,9 @@ spec:
   - name: test-container
     image: gcr.io/google_containers/test-webserver
     volumeMounts:
-    - name: test-volume
+    - name: testvol
       mountPath: /test-portworx-volume
   volumes:
-  - name: test-volume
+  - name: testvol
     persistentVolumeClaim:
       claimName: pvc0001
