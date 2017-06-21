@@ -47,10 +47,11 @@ spec:
       # generated from the deployment name
       labels:
         app: nginx
+    hostNetwork: true
     spec:
       containers:
       - name: nginx
-        image: nginx:1.7.9
+        image: nginx
         ports:
         - containerPort: 80
        volumeMounts:
