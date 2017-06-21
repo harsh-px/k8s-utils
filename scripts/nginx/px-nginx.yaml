@@ -1,0 +1,57 @@
+##### Portworx storage class
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+    name: px-nginx-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+   repl: "3"
+   snap_interval:   "70"
+   io_priority:  "low"
+---
+##### Portworx persistent volume claim
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: px-nginx-pvc
+   annotations:
+     volume.beta.kubernetes.io/storage-class: px-nginx-sc
+spec:
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 1Gi
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: ngnix
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1 # tells deployment to run 1 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      # unlike px-nginx.yaml, the name is not included in the meta data as a unique name is
+      # generated from the deployment name
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+
