@@ -6,8 +6,7 @@ metadata:
 provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "3"
-   snap_interval:   "70"
-   io_priority:  "low"
+   shared: "true"
 ---
 ##### Portworx persistent volume claim
 kind: PersistentVolumeClaim
@@ -41,7 +40,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 1 # tells deployment to run 1 pods matching the template
+  replicas: 3 # tells deployment to run 1 pods matching the template
   template: # create pods using pod definition in this template
     metadata:
       # unlike px-nginx.yaml, the name is not included in the meta data as a unique name is
@@ -54,4 +53,10 @@ spec:
         image: nginx:1.7.9
         ports:
         - containerPort: 80
-
+       volumeMounts:
+       - name: nginx-persistent-storage
+         mountPath: /usr/share/nginx/html
+      volumes:
+      - name: nginx-persistent-storage
+        persistentVolumeClaim:
+          claimName: px-nginx-pvc
