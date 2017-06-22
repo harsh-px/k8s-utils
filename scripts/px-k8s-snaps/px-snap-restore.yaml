@@ -1,8 +1,8 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  # format is name.<new_snapshot_name>-source.<old_pvc_name>
-  name: name.snap001-source.pvcsc001
+  # format is name.<new_volume_name>-source.<old_pvc_pxsnap_name>
+  name: name.pvcrestore001-source.snap001
   annotations:
     volume.beta.kubernetes.io/storage-class: portworx-io-priority-high
 spec:
