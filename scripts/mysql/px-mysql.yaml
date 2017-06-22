@@ -62,10 +62,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: kubernetes.io/hostname
+              - key: px-mysql-pvc
                 operator: In
                 values:
-                - minion-3
+                - "true"
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
