@@ -5,7 +5,7 @@ metadata:
     name: px-mysql-sc
 provisioner: kubernetes.io/portworx-volume
 parameters:
-   repl: "3"
+   repl: "1"
    snap_interval:   "70"
    io_priority:  "low"
 ---
@@ -55,15 +55,6 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgredb
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: kubernetes.io/hostname
-                operator: In
-                values:
-                - minion-3
       volumes:
       - name: postgredb
         persistentVolumeClaim:
