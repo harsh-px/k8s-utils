@@ -7,7 +7,6 @@ provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "3"
    snap_interval:   "70"
-   io_priority:  "low"
 ---
 ##### Portworx persistent volume claim
 kind: PersistentVolumeClaim
@@ -55,9 +54,9 @@ spec:
         ports:
         - containerPort: 3306
           name: mysql
-        volumeMounts:
-        - name: mysql-persistent-storage
-          mountPath: /var/lib/mysql
+          volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
