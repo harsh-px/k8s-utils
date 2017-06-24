@@ -33,9 +33,13 @@
 * Dynamically provsioned volumes
   - PVC's created based on StorageClass
   - [example-spec](https://raw.githubusercontent.com/harsh-px/k8s-utils/master/scripts/mysql/px-mysql.yaml)
+* Convergence
+  - PX places labels where PVC data resides
+  - Use node affinity in scheduler in schedule app pods on nodes with these labels
 
 ### Apps
 * Deployments
   - replicas based Pods
   - During node failures/decommissions, pod moves from one minion to another. TearDown and Setup invoked on the PVC.
 * StatefulSets
+  - Issues with convergence. No way to specify node affinity.
