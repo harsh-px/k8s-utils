@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-data03
+spec:
+  storageClassName: data03sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 94Gi
