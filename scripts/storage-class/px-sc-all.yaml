@@ -7,7 +7,6 @@ provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "1"
    snap_interval:   "70"
-   io_priority:  "high"
 
 ---
 
@@ -31,15 +30,15 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-   name: pvpod
+   name: nginx
 spec:
    containers:
-   - name: test-container
-     image: gcr.io/google_containers/test-webserver
+   - name: nginx
+     image: nginx
      volumeMounts:
      - name: test-volume
-       mountPath: /test-portworx-volume
+       mountPath: /mnt
    volumes:
    - name: test-volume
      persistentVolumeClaim:
-       claimName: pvcsc001
+       claimName: <pvc-name>
