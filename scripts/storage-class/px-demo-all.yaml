@@ -2,35 +2,31 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
-    name: portworx-io-priority-high
+    name: portworx-demo-sc
 provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "1"
-   snap_interval:   "70"
-
 ---
 
 ##### Portworx persistent volume claim
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-   name: pvcsc001
+   name: px-demo-pvc
    annotations:
-     volume.beta.kubernetes.io/storage-class: portworx-io-priority-high
+     volume.beta.kubernetes.io/storage-class: portworx-demo-sc
 spec:
    accessModes:
      - ReadWriteOnce
    resources:
      requests:
        storage: 1Gi
-
 ---
-
-##### Pod using a volume dynamically provisioned from above volume claim
+##### Pod using a volume dynamically provisioned from a volume claim
 apiVersion: v1
 kind: Pod
 metadata:
-   name: nginx
+   name: px-nginx
 spec:
    containers:
    - name: nginx
@@ -41,4 +37,4 @@ spec:
    volumes:
    - name: test-volume
      persistentVolumeClaim:
-       claimName: <pvc-name>
+       claimName: px-demo-pvc

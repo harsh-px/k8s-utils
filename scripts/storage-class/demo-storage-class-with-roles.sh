@@ -1,11 +1,12 @@
 #!/bin/bash -ex
 
-kubectl create -f px-sc-all.yaml
+kubectl apply -f px-demo-vol.yaml
+kubectl apply -f px-demo-app.yaml
 
 sleep 5
 
-kubectl describe storageclass portworx-io-priority-high
-kubectl describe pvc
+kubectl describe storageclass px-demo-sc
+kubectl describe pvc px-demo-pvc
 kubectl describe pv
-kubectl get pod pvpod
+kubectl get pod px-nginx -o wide
 

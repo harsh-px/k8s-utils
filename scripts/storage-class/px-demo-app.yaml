@@ -1,0 +1,16 @@
+##### Pod using a volume dynamically provisioned from a volume claim
+apiVersion: v1
+kind: Pod
+metadata:
+   name: px-nginx
+spec:
+   containers:
+   - name: nginx
+     image: nginx
+     volumeMounts:
+     - name: test-volume
+       mountPath: /mnt
+   volumes:
+   - name: test-volume
+     persistentVolumeClaim:
+       claimName: px-demo-pvc
