@@ -6,11 +6,7 @@ metadata:
 provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "2"
-   snap_interval:   "70"
-   io_priority:  "high"
-
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,7 +18,7 @@ spec:
   ports:
     - port: 9042
   selector:
-    app: cassandra
+app: cassandra
 
 ---
 
