@@ -27,6 +27,8 @@ service docker restart
 # dev prep
 git clone https://github.com/harsh-px/k8s-utils.git
 echo "alias k=kubectl" >> ~/.bashrc
+
+k8s-utils/scripts/dev/update-kubelet.sh					  
 SCRIPT
 
 $kubeadm_init = <<SCRIPT
@@ -45,6 +47,7 @@ echo "***** Setting up kubeconfig"
 sudo cp /etc/kubernetes/admin.conf $HOME/
 sudo chown $(id -u):$(id -g) $HOME/admin.conf
 echo "export KUBECONFIG=$HOME/admin.conf" >> $HOME/.bashrc
+
 SCRIPT
 
 $flannel_setup = <<SCRIPT
