@@ -9,4 +9,4 @@ cp /vagrant/kubelet /usr/bin/kubelet
 echo "md5 after: `md5sum /usr/bin/kubelet`"
 
 echo "Restarting kubelet service..."
-service kubelet stop
+service kubelet start
