@@ -45,11 +45,11 @@ spec:
         - containerPort: 3306
           name: mysql
         volumeMounts:
-        - name: mysql-vol-01
+        - name: mysql-vol
           mountPath: /var/lib/mysql
   volumeClaimTemplates:
   - metadata:
-      name: mysql-vol-01
+      name: mysql-vol
       annotations:
         volume.beta.kubernetes.io/storage-class: portworx-repl2
     spec:
