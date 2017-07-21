@@ -28,17 +28,17 @@ service docker restart
 git clone https://github.com/harsh-px/k8s-utils.git
 echo "alias k=kubectl" >> ~/.bashrc
 
-#k8s-utils/scripts/dev/update-kubelet.sh					  
+k8s-utils/scripts/dev/update-kubelet.sh					  
 SCRIPT
 
 $kubeadm_init = <<SCRIPT
-#KUBE_HYPERKUBE_IMAGE=harshpx/hyperkube:1.8.0 kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
-kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
+KUBE_HYPERKUBE_IMAGE=harshpx/hyperkube:1.8.0 kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
+#kubeadm init --apiserver-advertise-address 192.168.33.10 --pod-network-cidr 10.244.0.0/16 --token 8c2350.f55343444a6ffc46
 SCRIPT
 
 $kubeadm_join = <<SCRIPT
-#KUBE_HYPERKUBE_IMAGE=harshpx/hyperkube:1.8.0 kubeadm join --token 8c2350.f55343444a6ffc46 192.168.33.10:6443
-kubeadm join --token 8c2350.f55343444a6ffc46 192.168.33.10:6443
+KUBE_HYPERKUBE_IMAGE=harshpx/hyperkube:1.8.0 kubeadm join --token 8c2350.f55343444a6ffc46 192.168.33.10:6443 --skip-preflight-checks
+#kubeadm join --token 8c2350.f55343444a6ffc46 192.168.33.10:6443
 SCRIPT
 
 $kubeconfig_setup = <<SCRIPT
