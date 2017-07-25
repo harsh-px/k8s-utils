@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: px-mysql-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  portworxVolume:
+    volumeID: "mysql-vol"
+---
+##### Portworx persistent volume claim
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: px-mysql-pvc
+   annotations:
+     volume.beta.kubernetes.io/storage-class: px-mysql-sc
+spec:
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 10Gi
