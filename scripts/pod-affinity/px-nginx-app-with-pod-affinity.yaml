@@ -32,6 +32,7 @@ spec:
                 values:
                 - "portworx"
             topologyKey: kubernetes.io/hostname
+            namespaces: ""
       hostNetwork: true
       containers:
       - name: nginx
