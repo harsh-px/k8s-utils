@@ -27,8 +27,6 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: px-postgres
-                operator: Exists
               - key: px/running
                 operator: NotIn
                 values:

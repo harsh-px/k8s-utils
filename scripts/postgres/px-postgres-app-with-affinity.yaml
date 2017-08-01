@@ -21,6 +21,14 @@ spec:
             - matchExpressions:
               - key: px-postgres
                 operator: Exists
+              - key: px/running
+                operator: NotIn
+                values:
+                - "false"
+              - key: px/enabled
+                operator: NotIn
+                values:
+                - "false"
       containers:
       - name: postgres
         image: postgres:9.5
