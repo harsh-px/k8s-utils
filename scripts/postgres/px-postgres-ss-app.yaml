@@ -1,37 +1,28 @@
-##### Portworx storage class
-kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
-metadata:
-    name: portworx-repl2
-provisioner: kubernetes.io/portworx-volume
-parameters:
-   repl: "2"
----
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx
+  name: postgres
   labels:
-    app: nginx
+    app: postgres
 spec:
   ports:
-  - port: 80
-    name: web
+  - port: 5432
+    name: postgres
   clusterIP: None
   selector:
-    app: nginx
+    app: postgres
 ---
-apiVersion: apps/v1beta1
+apiVersion: extensions/v1beta1
 kind: StatefulSet
 metadata:
-  name: web
+  name: postgres
 spec:
-  serviceName: "nginx"
+  serviceName: "postgres"
   replicas: 1
   template:
     metadata:
       labels:
-        app: nginx
+        app: postgres
     spec:
       affinity:
         nodeAffinity:
@@ -47,21 +38,28 @@ spec:
                 values:
                 - "false"
       containers:
-      - name: nginx
-        image: gcr.io/google_containers/nginx-slim:0.8
+      - name: postgres
+        image: postgres:9.5
+        imagePullPolicy: "IfNotPresent"
         ports:
-        - containerPort: 80
-          name: web
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: superpostgres
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         volumeMounts:
-        - name: www
-          mountPath: /usr/share/nginx/html
+        - mountPath: /var/lib/postgresql/data
+          name: postgredb
   volumeClaimTemplates:
   - metadata:
-      name: www
+      name: postgredb
       annotations:
         volume.beta.kubernetes.io/storage-class: portworx-repl2
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 1Gi
+          storage: 2Gi
