@@ -48,7 +48,7 @@ spec:
                 - "false"
       containers:
       - name: nginx
-        image: gcr.io/google_containers/nginx-slim:0.8
+        image: nginx
         ports:
         - containerPort: 80
           name: web
