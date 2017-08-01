@@ -23,17 +23,20 @@ spec:
         app: nginx
     spec:
       affinity:
-        podAffinity:
+        nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: name
-                operator: In
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px-postgres
+                operator: Exists
+              - key: px/running
+                operator: NotIn
                 values:
-                - "portworx"
-            topologyKey: kubernetes.io/hostname
-            namespaces:
-            - "kube-system"
+                - "false"
+              - key: px/enabled
+                operator: NotIn
+                values:
+                - "false"
       hostNetwork: true
       containers:
       - name: nginx

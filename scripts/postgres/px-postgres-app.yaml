@@ -14,6 +14,19 @@ spec:
       labels:
         app: postgres
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/running
+                operator: NotIn
+                values:
+                - "false"
+              - key: px/enabled
+                operator: NotIn
+                values:
+                - "false"
       containers:
       - name: postgres
         image: postgres:9.5
