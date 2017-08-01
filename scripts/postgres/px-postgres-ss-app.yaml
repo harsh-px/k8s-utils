@@ -12,6 +12,15 @@ spec:
   selector:
     app: postgres
 ---
+##### Portworx storage class
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+    name: portworx-repl2
+provisioner: kubernetes.io/portworx-volume
+parameters:
+   repl: "2"
+---
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
