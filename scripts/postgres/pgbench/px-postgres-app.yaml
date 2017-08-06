@@ -49,7 +49,7 @@ spec:
           name: postgredb
       - name: pgbench
         image: harshpx/docker-pgbench:latest
-        imagePullPolicy: "IfNotPresent"
+        imagePullPolicy: "Always"
         env:
         - name: POSTGRES_USER
           value: postgres
