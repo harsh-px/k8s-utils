@@ -29,7 +29,7 @@ spec:
                 - "false"
       containers:
       - name: postgres
-        image: harshpx/docker-pgbench:latest
+        image: postgres:9.5
         imagePullPolicy: "IfNotPresent"
         ports:
         - containerPort: 5432
@@ -47,6 +47,20 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: postgredb
+      - name: pgbench
+        image: harshpx/docker-pgbench:latest
+        imagePullPolicy: "IfNotPresent"
+        env:
+        - name: POSTGRES_USER
+          value: pgbench
+        - name: PGUSER
+          value: pgbench
+        - name: POSTGRES_PASSWORD
+          value: superpostgres
+        - name: PGBENCH_PASSWORD
+          value: superpostgres
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
       volumes:
       - name: postgredb
         persistentVolumeClaim:
