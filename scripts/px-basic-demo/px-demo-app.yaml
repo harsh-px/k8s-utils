@@ -19,11 +19,11 @@ spec:
             - "false"
   containers:
   - name: nginx
-   image: nginx
-   volumeMounts:
-   - name: test-volume
-     mountPath: /mnt
+    image: nginx
+    volumeMounts:
+    - name: test-volume
+      mountPath: /mnt
   volumes:
   - name: test-volume
-   persistentVolumeClaim:
-     claimName: px-demo-pvc
+    persistentVolumeClaim:
+      claimName: px-demo-pvc
