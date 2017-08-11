@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 1 # tells deployment to run 1 pods matching the template
+  replicas: 3 # tells deployment to run 1 pods matching the template
   template: # create pods using pod definition in this template
     metadata:
       # unlike px-nginx-app-with-pod-affinity.yaml, the name is not included in the meta data as a unique name is
@@ -49,4 +49,4 @@ spec:
       volumes:
       - name: nginx-persistent-storage
         persistentVolumeClaim:
-          claimName: px-nginx-pvc
+          claimName: px-nginx-shared-pvc
