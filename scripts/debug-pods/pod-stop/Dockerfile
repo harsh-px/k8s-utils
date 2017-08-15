@@ -1,5 +1,5 @@
 FROM busybox
 
-COPY run2.sh /run.sh
+COPY run.sh /run.sh
 
 ENTRYPOINT [ "/run.sh" ]

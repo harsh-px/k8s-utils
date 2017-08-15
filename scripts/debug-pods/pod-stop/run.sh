@@ -10,7 +10,9 @@ function sighandler() {
 
 trap sighandler SIGINT SIGTERM
 
+echo "Pod stop application with hostname: ${HOSTNAME} starting..."
+
+sleep 2
 echo "making directory foo2..."
 mkdir -p /var/sighandler/foo2
-
-while [ 1 ] ; do sleep 1000; done
+echo `date` >> /var/sighandler/foo2/times
