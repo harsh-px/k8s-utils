@@ -32,12 +32,9 @@ spec:
       labels:
         app: pod-stop
     spec:
-      hostNetwork: true
       containers:
       - name: pod-stop
         image: harshpx/pod-stop:latest
-        ports:
-        - containerPort: 80
         volumeMounts:
         - name: nginx-persistent-storage
           mountPath: /var/sighandler
