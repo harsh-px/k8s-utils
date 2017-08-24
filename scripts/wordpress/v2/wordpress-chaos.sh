@@ -20,6 +20,7 @@ while [ 1 ]; do
   running_count=`kubectl get pods -l name=wordpress | grep Running | awk '{print $1}' | wc -l`
   if [ $running_count -ne $EXPECTED_RUNNING ]; then
     echo "Total running wordpress pods: ${running_count} don't match expected running: ${EXPECTED_RUNNING}"
+    kubectl get pods -l name=wordpress
     fail=true
   fi
 
