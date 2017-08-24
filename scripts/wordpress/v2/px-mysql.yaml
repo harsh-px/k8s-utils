@@ -1,8 +1,15 @@
----
 apiVersion: storage.k8s.io/v1beta1
 kind: StorageClass
 metadata:
   name: portworx-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+  repl: "2"
+---
+apiVersion: storage.k8s.io/v1beta1
+kind: StorageClass
+metadata:
+  name: portworx-sc-shared
 provisioner: kubernetes.io/portworx-volume
 parameters:
   repl: "2"
@@ -35,6 +42,7 @@ metadata:
     app: wordpress
     tier: app
   annotations:
+    volume.beta.kubernetes.io/storage-class: portworx-sc-shared
   accessModes:
     - ReadWriteOnce
   resources:
@@ -43,7 +51,6 @@ metadata:
   selector:
     matchLabels:
       app: wordpress
-root@k8s-master:~/optimized# cat 01-database/mysql.yaml
 ---
 apiVersion: v1
 kind: Service
