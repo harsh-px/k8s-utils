@@ -30,9 +30,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  selector:
-    matchLabels:
-      app: mysql
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -43,14 +40,12 @@ metadata:
     tier: app
   annotations:
     volume.beta.kubernetes.io/storage-class: portworx-sc-shared
+spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
-  selector:
-    matchLabels:
-      app: wordpress
 ---
 apiVersion: v1
 kind: Service

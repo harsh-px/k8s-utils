@@ -19,6 +19,8 @@ spec:
 ---
 apiVersion: v1
 kind: Service
+metadata:
+  name: wordpress
   labels:
     app: wordpress
     tier: app
@@ -52,7 +54,7 @@ spec:
         tier: app
     spec:
       containers:
-      - image: bswatson/wordpress:php7.1-fpm-0.1
+      - image: bswatson/wordpress:php7.1-fpm-0.2
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
