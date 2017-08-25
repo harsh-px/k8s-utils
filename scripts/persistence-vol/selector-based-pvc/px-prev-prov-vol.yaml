@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: testvol
+  labels:
+    name: testvol
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  portworxVolume:
+    volumeID: testvol
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: testvol-pvc
+spec:
+  selector:
+    matchLabels:
+      name: testvol
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+   name: nginx-px
+spec:
+  containers:
+  - image: nginx
+    name: nginx-px
+    volumeMounts:
+    - mountPath: /test-portworx-volume
+      name: testvol
+  volumes:
+  - name: testvol
+    persistentVolumeClaim:
+      claimName: testvol-pvc
