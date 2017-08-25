@@ -4,12 +4,13 @@ metadata:
   name: nginx-service
 spec:
   selector:
-    app: ngnix
+    app: nginx
+  type: NodePort
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
-
+      nodePort: 30304
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
@@ -37,7 +38,6 @@ spec:
                 operator: NotIn
                 values:
                 - "false"
-      hostNetwork: true
       containers:
       - name: nginx
         image: nginx
