@@ -3,7 +3,7 @@ kind: PersistentVolume
 metadata:
     name: state1
     labels:
-      name: portworx
+      name: state1
 spec:
     capacity:
       storage: 1Gi
@@ -20,9 +20,10 @@ metadata:
   name: state1-pvc
 spec:
   selector:
+    matchLabels:
       name: state1
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
