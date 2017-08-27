@@ -1,34 +1,12 @@
 apiVersion: storage.k8s.io/v1beta1
 kind: StorageClass
 metadata:
-  name: portworx-sc-repl3
-provisioner: kubernetes.io/portworx-volume
-parameters:
-  repl: "3"
-  priority_io: "high"
----
-apiVersion: storage.k8s.io/v1beta1
-kind: StorageClass
-metadata:
   name: portworx-sc-repl3-shared
 provisioner: kubernetes.io/portworx-volume
 parameters:
   repl: "3"
   priority_io: "high"
   shared: "true"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mysql-pvc-1
-  annotations:
-    volume.beta.kubernetes.io/storage-class: portworx-sc-repl3
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
