@@ -20,6 +20,7 @@ metadata:
   labels:
     app: wordpress
 spec:
+  replicas: 3
   strategy:
     type: Recreate
   template:
@@ -28,7 +29,6 @@ spec:
         app: wordpress
         tier: frontend
     spec:
-      replicas: 3
       containers:
       - image: wordpress:4.8-apache
         name: wordpress
