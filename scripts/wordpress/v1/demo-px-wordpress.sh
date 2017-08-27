@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 echo "Creating secret for mysql..."
 tr --delete '\n' <password.txt >.strippedpassword.txt && mv .strippedpassword.txt password.txt
