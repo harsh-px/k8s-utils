@@ -11,7 +11,7 @@ parameters:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-   name: px-test-pvc
+   name: pxtestpvc
    annotations:
      volume.beta.kubernetes.io/storage-class: px-nginx-sc
 spec:
