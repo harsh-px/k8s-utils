@@ -4,7 +4,7 @@ metadata:
   # format is name.<new_snapshot_name>-source.<old_pvc_name>
   name: name.snap001-source.px-test-pvc
   annotations:
-    volume.beta.kubernetes.io/storage-class: px-demo-sc
+    volume.beta.kubernetes.io/storage-class: px-nginx-sc
 spec:
    accessModes:
      - ReadWriteOnce
