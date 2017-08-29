@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  # format is name.<new_snapshot_name>-source.<old_pvc_name>
+  name: name.snap001-source.pxtestpvc
+  annotations:
+    volume.beta.kubernetes.io/storage-class: px-nginx-sc
+spec:
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 1Gi
