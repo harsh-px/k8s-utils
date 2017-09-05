@@ -1,0 +1,248 @@
+# -*- mode: ruby -*-
+# vim:ft=ruby:sw=3:et:
+
+vm_nodes = {            # EDIT to specify VM node names, and their private IP (vboxnet#)
+   'kb1' => "192.168.56.70",
+   'kb2' => "192.168.56.71",
+   'kb3' => "192.168.56.72",
+}
+# EDIT or specify ENV variable to define OS-Type (see `vm_conf` below)
+ostype = ENV['KUBE_OSTYPE'] || 'ubuntu16'
+#ostype = ENV['KUBE_OSTYPE'] || 'centos7'
+
+# VM config, format: <type-label> => [ 0:vagrant-box, 1:vm-net-iface, 2:vm-disk-controller, 3:vm-start-port, 4:vm-drives-map ]
+# see https://atlas.hashicorp.com/search? for more VM images (ie. "box-names")
+vm_conf = {
+   #'ubuntu14' => [ 'ubuntu/trusty64', 'eth1', 'SATAController', 1, { "sdb" => 15*1024, "sdc" => 20*1024 } ],
+   'ubuntu16' => [ 'ubuntu/xenial64', 'enp0s8', 'SCSI Controller', 2, { "sdc" => 15*1024, "sdd" => 20*1024 } ],
+   'centos7'  => [ 'centos/7', 'eth1', 'IDE', 1, { "sdb" => 20*1024 } ],
+   #'debian8'  => [ 'debian/jessie64', 'eth1', 'SATA Controller', 1, { "sdb" => 15*1024, "sdc" => 20*1024 } ],
+}
+
+# (internal variables)
+mybox, myvmif, mycntrl, myport, extra_disks = vm_conf[ostype]
+mystorage = "/dev/"+extra_disks.keys().join(",/dev/")
+k8s_master_host, k8s_master_ip = vm_nodes.first()
+k8s_token, etc_hosts = "030ffd.5d7a97b7e0d23ba9", ""
+vm_nodes.each do |host,ip|
+   etc_hosts += "\n#{ip}\t#{host}"
+end
+
+#
+# Install scriplets
+#
+# install_prereqs - usually run first, does the base packages install and configuration
+install_prereqs = <<SCRIPT
+echo ':: Installing Prerequisites ...'
+if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
+   export DEBIAN_FRONTEND=noninteractive
+   apt-get clean && apt-get update && \
+   apt-get install -y apt-transport-https lsb-release curl linux-image-$(uname -r)
+elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
+   sed -i -e 's/^SELINUX=enforcing/SELINUX=disabled  # VAGRANT/' /etc/selinux/config && \
+   setenforce 0
+   yum make clean && yum makecache fast && \
+   yum install -y curl make net-tools bind-utils
+else    # ------------------------------------> (unsuported)
+   echo "Your platform is not supported" >&2
+   exit 1
+fi
+SCRIPT
+
+# install_docker - installs the latest version of Docker
+install_docker = <<SCRIPT
+   echo ':: Installing Docker ...'
+   curl -fsSL https://get.docker.com | sh -s > /dev/null
+   systemctl enable docker
+   systemctl start docker
+SCRIPT
+
+# install_etcd_v3 - installs the Etcd v3 key/value database (standalone install, shared between Portworx and Kubernetes)
+install_etcd_v3 = <<SCRIPT
+hostname -I | grep -wq #{k8s_master_ip}
+if [ $? -eq 0 ]; then
+   echo ':: Installing Etcd k/v database ...'
+   curl -fsSL https://github.com/coreos/etcd/releases/download/v3.2.6/etcd-v3.2.6-linux-amd64.tar.gz | \
+      tar -xvz --strip=1 -f - -C /usr/local/bin etcd-v3.2.6-linux-amd64/etcdctl etcd-v3.2.6-linux-amd64/etcd
+   useradd -d /var/lib/etcd -s /bin/false -m etcd
+   cat > /lib/systemd/system/etcd.service << _eof
+[Unit]
+Description=etcd key-value store
+After=network.target
+
+[Service]
+User=etcd
+Type=notify
+PermissionsStartOnly=true
+Environment=ETCD_NAME=%H
+EnvironmentFile=-/etc/default/%p
+ExecStart=/usr/local/bin/etcd --advertise-client-urls 'http://localhost:2379,http://#{k8s_master_ip}:2379' --listen-client-urls 'http://0.0.0.0:2379' --data-dir /var/lib/etcd/default
+Restart=on-abnormal
+RestartSec=10s
+LimitNOFILE=40000
+
+[Install]
+WantedBy=multi-user.target
+_eof
+   systemctl enable etcd
+   systemctl restart etcd
+else
+   echo '(skipping install of Etcd on this node)'
+fi
+SCRIPT
+
+# install_kubernetes - installs the Kubernetes cluster (first node [k8s_master_host] will be the master)
+install_kubernetes = <<SCRIPT
+echo ':: Installing Kubernetes ...'
+if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
+   curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+   echo "deb http://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
+      > /etc/apt/sources.list.d/kubernetes.list
+   apt-get update && apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
+   cat > /etc/yum.repos.d/kubernetes.repo << _eof
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+       https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+_eof
+   yum install -y kubelet kubeadm kubectl kubernetes-cni
+else    # ------------------------------------> (unsuported)
+   echo "Your platform is not supported" >&2
+   exit 1
+fi
+
+# Tune OS (kubernetes prerequisites)
+sysctl -w net.bridge.bridge-nf-call-iptables=1
+sysctl -w net.bridge.bridge-nf-call-ip6tables=1
+
+# Fix CentOS service hang (see https://github.com/kubernetes/kubeadm/issues/228)
+grep -q -- --cgroup-driver=systemd /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+if [ $? -eq 0 ]; then
+   sed -i -e 's/--cgroup-driver=systemd/--cgroup-driver=cgroupfs/' \
+      /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+   systemctl daemon-reload
+fi
+
+# Enable/Start service
+systemctl enable kubelet
+systemctl restart kubelet
+
+# Configure/Start/Join cluster
+hostname -I | grep -wq #{k8s_master_ip}
+if [ $? -eq 0 ]; then
+   echo ':: Configuring Kubernetes Master'
+   kubeadm reset
+   cat > /etc/kubernetes/vagrant.yaml << _eof
+apiVersion: kubeadm.k8s.io/v1alpha1
+kind: MasterConfiguration
+api:
+  advertiseAddress: #{k8s_master_ip}
+etcd:
+  endpoints:
+  - http://#{k8s_master_ip}:2379
+token: #{k8s_token}
+_eof
+   kubeadm init --config /etc/kubernetes/vagrant.yaml
+   export KUBECONFIG=/etc/kubernetes/admin.conf
+   echo "WARNING: Making $KUBECONFIG public (not reccommended for production!!)" >&2
+   chmod a+r $KUBECONFIG && echo "export KUBECONFIG=$KUBECONFIG" >> /etc/profile.d/k8s_vagrant.sh
+
+   echo ':: Configuring Kubernetes Network'
+   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel-rbac.yml
+   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+   kubectl apply -n kube-system -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+else
+   echo ':: Joining Kubernetes Cluster'
+   kubeadm join --token #{k8s_token} #{k8s_master_ip}:6443
+fi
+SCRIPT
+
+# install_portworx_daemonset - installs the Portworx as a Kubernetes DaemoNset
+install_portworx_daemonset = <<SCRIPT
+hostname -I | grep -wq #{k8s_master_ip}
+if [ $? -eq 0 ]; then
+   echo ':: Installing Portworx DaemonSet ...'
+   curl -o px-spec.yaml "http://install.portworx.com?cluster=mycluster&kvdb=etcd://#{k8s_master_ip}:2379&miface=#{myvmif}&diface=#{myvmif}&drives=#{mystorage}"
+   kubectl apply -f px-spec.yaml
+else
+   echo '(skipping install of Portworx on this node)'
+fi
+SCRIPT
+
+#
+# VAGRANT SETUP
+#
+Vagrant.configure("2") do |config|
+
+   vm_nodes.each do |host,ip|
+      config.vm.define "#{host}" do |node|
+         node.vm.box = "#{mybox}"
+         node.vm.hostname = "#{host}"
+         node.vm.network "private_network", ip: "#{ip}", :netmask => "255.255.255.0"
+
+         node.vm.provider "virtualbox" do |v|
+            v.gui = false
+            v.memory = 4096
+
+            # Extra customizations
+            v.customize 'pre-boot', ["modifyvm", :id, "--cpus", "2"]
+            v.customize 'pre-boot', ["modifyvm", :id, "--chipset", "ich9"]
+            v.customize 'pre-boot', ["modifyvm", :id, "--audio", "none"]
+            v.customize 'pre-boot', ["modifyvm", :id, "--usb", "off"]
+            v.customize 'pre-boot', ["modifyvm", :id, "--accelerate3d", "off"]
+            v.customize 'pre-boot', ["storagectl", :id, "--name", "#{mycntrl}", "--hostiocache", "on"]
+
+            # force Virtualbox to sync the time difference w/ threshold 10s (defl was 20 minutes)
+            v.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000 ]
+
+            # Net boot speedup (see https://github.com/mitchellh/vagrant/issues/1807)
+            v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+            v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+
+            if defined?(extra_disks)
+               # NOTE: If you hit errors w/ extra disks provisioning, you may need to run "Virtual
+               # Media Manager" via VirtualBox GUI, and manually remove $host_sdX drives.
+               port = myport
+               extra_disks.each do |hdd, size|
+                  vdisk_name = ".vagrant/#{host}_#{hdd}.vdi"
+                  unless File.exist?(vdisk_name)
+                     v.customize ['createhd', '--filename', vdisk_name, '--size', "#{size}"]
+                  end
+                  v.customize ['storageattach', :id, '--storagectl', "#{mycntrl}", '--port', port, '--device', 0, '--type', 'hdd', '--medium', vdisk_name]
+                  port = port + 1
+               end
+            end
+         end
+
+         # Custom post-install script below:
+         node.vm.provision "shell", inline: <<-SHELL
+            echo ':: Fixing ROOT access ...'
+            echo root:Password1 | chpasswd
+            sed -i -e 's/.*UseDNS.*/UseDNS no  # VAGRANT/' \
+               -e 's/.*PermitRootLogin.*/PermitRootLogin yes  # VAGRANT/' \
+               -e 's/.*PasswordAuthentication.*/PasswordAuthentication yes  # VAGRANT/' \
+               /etc/ssh/sshd_config && systemctl restart sshd
+
+            echo ':: Fixing /etc/hosts ...'
+            sed -i -e 's/.*#{host}.*/# \\0  # VAGRANT/' /etc/hosts
+            cat << _eof >> /etc/hosts
+#{etc_hosts}
+_eof
+
+            #{install_prereqs}
+            #{install_docker}
+            #{install_etcd_v3}
+            #{install_kubernetes}
+            #{install_portworx_daemonset}
+
+            ln -s /opt/pwx/bin/pxctl /usr/local/bin/
+         SHELL
+      end
+   end
+end
+
