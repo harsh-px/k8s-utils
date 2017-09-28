@@ -38,5 +38,7 @@ for obj in `aws s3api list-objects --bucket "${BUCKET}" --prefix "${PREFIX}"  --
     gzip -cd ${DEFAULT_DUMP_LOCATION}/$(basename "${obj//\"}") >> ${DEFAULT_DUMP_LOCATION}/master.json
 done
 
+echo "All logs merged at: ${DEFAULT_DUMP_LOCATION}/master.json"
+
 # TODO Post to ES
 # cat ${DEFAULT_DUMP_LOCATION}/master.json | jq -c '. | {"index": {"_index": "logs", "_type": "log",}}, .' | curl -XPOST localhost:9200/_bulk --data-binary @-
