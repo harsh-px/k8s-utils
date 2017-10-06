@@ -2,10 +2,10 @@
 # vim:ft=ruby:sw=3:et:
 
 vm_nodes = {            # EDIT to specify VM node names, and their private IP (vboxnet#)
-   'kb1' => "192.168.56.70",
-   'kb2' => "192.168.56.71",
-   'kb3' => "192.168.56.72",
-   'kb4' => "192.168.56.73",
+   'k1m' => "192.168.56.70",
+   'k1n1' => "192.168.56.71",
+   'k1n2' => "192.168.56.72",
+   'k1n3' => "192.168.56.73",
 }
 # EDIT or specify ENV variable to define OS-Type (see `vm_conf` below)
 ostype = ENV['KUBE_OSTYPE'] || 'ubuntu16'
@@ -15,7 +15,7 @@ ostype = ENV['KUBE_OSTYPE'] || 'ubuntu16'
 # see https://atlas.hashicorp.com/search? for more VM images (ie. "box-names")
 vm_conf = {
    #'ubuntu14' => [ 'ubuntu/trusty64', 'eth1', 'SATAController', 1, { "sdb" => 15*1024, "sdc" => 20*1024 } ],
-   'ubuntu16' => [ 'ubuntu/xenial64', 'enp0s8', 'SCSI', 2, { "sdc" => 15*1024, "sdd" => 20*1024 } ],
+   'ubuntu16' => [ 'ubuntu/xenial64', 'enp0s8', 'SCSI Controller', 2, { "sdc" => 15*1024, "sdd" => 20*1024 } ],
    'centos7'  => [ 'centos/7', 'eth1', 'IDE', 1, { "sdb" => 20*1024 } ],
    #'debian8'  => [ 'debian/jessie64', 'eth1', 'SATA Controller', 1, { "sdb" => 15*1024, "sdc" => 20*1024 } ],
 }
@@ -99,7 +99,8 @@ if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
    curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
    echo "deb http://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
       > /etc/apt/sources.list.d/kubernetes.list
-   apt-get update && apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+   #apt-get update && apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+   apt-get update && apt-get install -y kubelet-1.7.5-00 kubeadm-1.7.5-00 kubectl-1.7.5-00 kubernetes-cni-1.7.5-00
 elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
    cat > /etc/yum.repos.d/kubernetes.repo << _eof
 [kubernetes]
@@ -111,7 +112,10 @@ repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 _eof
-   yum install -y kubelet kubeadm kubectl kubernetes-cni
+   
+   yum install -y yum-plugin-versionlock kubelet-1.7.5-0 kubeadm-1.7.5-0 kubectl-1.7.5-0 kubectl kubernetes-cni
+   yum versionlock "kube*"
+   #yum install -y kubelet kubeadm kubectl kubernetes-cni
 else    # ------------------------------------> (unsuported)
    echo "Your platform is not supported" >&2
    exit 1
@@ -159,7 +163,7 @@ _eof
    kubectl apply -n kube-system -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 else
    echo ':: Joining Kubernetes Cluster'
-   kubeadm join --token #{k8s_token} #{k8s_master_ip}:6443
+   kubeadm join --token #{k8s_token} #{k8s_master_ip}:6443 --skip-preflight-checks
 fi
 SCRIPT
 
