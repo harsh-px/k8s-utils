@@ -76,8 +76,8 @@ data:
 
     <source>
       type tail
-      path /var/log/containers/portworx*.log
-      pos_file /var/log/px-container.log.pos
+      path /var/lib/osd/log/portworx*log
+      pos_file /var/lib/osd/log/px-container.log.pos
       time_format %Y-%m-%dT%H:%M:%S.%N
       tag portworx.*
       format json
