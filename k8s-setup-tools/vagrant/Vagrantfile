@@ -100,7 +100,7 @@ if [ -d /etc/apt/sources.list.d ]; then # ----> Ubuntu/Debian distro
    echo "deb http://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
       > /etc/apt/sources.list.d/kubernetes.list
    #apt-get update && apt-get install -y kubelet kubeadm kubectl kubernetes-cni
-   apt-get update && apt-get install -y kubelet-1.7.5-00 kubeadm-1.7.5-00 kubectl-1.7.5-00 kubernetes-cni-1.7.5-00
+   apt-get update && apt-get install -y kubelet=1.7.5-00 kubeadm=1.7.5-00 kubectl=1.7.5-00 kubernetes-cni
 elif [ -d /etc/yum.repos.d ]; then      # ----> CentOS/RHEL distro
    cat > /etc/yum.repos.d/kubernetes.repo << _eof
 [kubernetes]
@@ -113,7 +113,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 _eof
    
-   yum install -y yum-plugin-versionlock kubelet-1.7.5-0 kubeadm-1.7.5-0 kubectl-1.7.5-0 kubectl kubernetes-cni
+   yum install -y yum-plugin-versionlock kubelet-1.7.5-0 kubeadm-1.7.5-0 kubectl-1.7.5-0 kubernetes-cni
    yum versionlock "kube*"
    #yum install -y kubelet kubeadm kubectl kubernetes-cni
 else    # ------------------------------------> (unsuported)

@@ -38,7 +38,7 @@ subjects:
   namespace: kube-system
 - kind: ServiceAccount
   name: default
-  namespace: kube-system   
+  namespace: kube-system
 
 ---
 apiVersion: v1
@@ -48,6 +48,32 @@ metadata:
   namespace: kube-system
 data:
   fluent.conf: |
+
+    <source>
+      @type systemd
+      path /var/log/journal
+      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      pos_file k8s-kubelet.pos
+      tag kubelet
+      read_from_head true
+    </source>
+
+    <match kubelet>
+       type elasticsearch
+       log_level info
+       include_tag_key true
+       logstash_prefix journal-log
+       host 34.211.24.146
+       port 31737
+       logstash_format true
+       buffer_chunk_limit 2M
+       buffer_queue_limit 32
+       flush_interval 5s
+       max_retry_wait 30
+       disable_retry_limit
+       num_threads 8
+    </match>
+
     <source>
       type tail
       path /var/log/containers/portworx*.log
@@ -59,7 +85,7 @@ data:
       keep_time_key true
     </source>
 
-    <filter portworx.**>
+    <filter kubernetes.**>
       type kubernetes_metadata
     </filter>
 
@@ -67,19 +93,18 @@ data:
        type elasticsearch
        log_level info
        include_tag_key true
-       logstash_prefix px-log
-
-       ## Host name / IP Address of the Elastic Search Client endpoint.
-       host 10.111.118.234
-       port 9200
+       logstash_prefix px-log ## Prefix for creating an Elastic search index.
+       host 34.211.24.146
+       port 31737
        logstash_format true
        buffer_chunk_limit 2M
        buffer_queue_limit 32
-       flush_interval 5s
+       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
        max_retry_wait 30
        disable_retry_limit
        num_threads 8
     </match>
+
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -102,7 +127,9 @@ spec:
       serviceAccountName: fluentd
       containers:
         - name: fluentd
-          image: fluent/fluentd-kubernetes-daemonset:elasticsearch
+          image: fluent/fluentd-kubernetes-daemonset:v0.12-debian-elasticsearch
+          securityContext:
+            privileged: true
           volumeMounts:
             - name: varlog
               mountPath: /var/log
@@ -121,5 +148,3 @@ spec:
         - name: config
           configMap:
             name: fluentd
-
-
