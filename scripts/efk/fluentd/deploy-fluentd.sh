@@ -1,4 +1,21 @@
+#!/bin/bash
 
+if [ -z "$ELASTIC_SEARCH_IP" ]; then
+    echo "[ERROR] ELASTIC_SEARCH_IP environment variable not set."
+    exit 1
+fi
+
+if [ -z "$ELASTIC_SEARCH_PORT" ]; then
+    echo "[ERROR] ELASTIC_SEARCH_PORT environment variable not set."
+    exit 1
+fi
+
+
+kubectl delete -n kube-system sa fluentd || true
+kubectl delete -n kube-system clusterrole fluentd || true
+kubectl delete -n kube-system clusterrolebinding fluentd || true
+
+cat <<EOF | kubectl create -f -
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -39,8 +56,12 @@ subjects:
 - kind: ServiceAccount
   name: default
   namespace: kube-system
+EOF
 
----
+kubectl delete -n kube-system configmap fluentd || true
+kubectl delete -n kube-system daemonSet fluentd || true
+
+cat <<EOF | kubectl create -f -
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -68,8 +89,8 @@ data:
        log_level info
        include_tag_key true
        logstash_prefix journal-log ## Prefix for creating an Elastic search index.
-       host 34.211.24.146
-       port 31737
+       host $ELASTIC_SEARCH_IP
+       port $ELASTIC_SEARCH_PORT
        logstash_format true
        buffer_chunk_limit 2M
        buffer_queue_limit 32
@@ -101,8 +122,8 @@ data:
        log_level info
        include_tag_key true
        logstash_prefix px-log ## Prefix for creating an Elastic search index.
-       host 34.211.24.146
-       port 31737
+       host $ELASTIC_SEARCH_IP
+       port $ELASTIC_SEARCH_PORT
        logstash_format true
        buffer_chunk_limit 2M
        buffer_queue_limit 32
@@ -159,3 +180,4 @@ spec:
         - name: posloc
           hostPath:
             path: /tmp
+EOF
