@@ -71,7 +71,7 @@ data:
   fluent.conf: |
     <source>
       @type systemd
-      path /run/log/journal
+      path /var/log/journal
       filters [{ "_SYSTEMD_UNIT": "docker.service" }]
       pos_file /tmp/dockerservice.pos
       tag journal.dockerd
@@ -81,7 +81,7 @@ data:
 
     <source>
       @type systemd
-      path /run/log/journal
+      path /var/log/journal
       filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       pos_file /tmp/k8s-kubelet.pos
       tag journal.kubelet
