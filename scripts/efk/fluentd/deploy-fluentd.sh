@@ -69,36 +69,25 @@ metadata:
   namespace: kube-system
 data:
   fluent.conf: |
-
     <source>
       @type systemd
-      path /var/log/journal
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
-      pos_file /tmp/k8s-kubelet.pos
-      tag kubelet
+      path /run/log/journal
+      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+      pos_file /tmp/dockerservice.pos
+      tag journal.dockerd
       read_from_head true
       strip_underscores true
     </source>
-    <filter kubelet>
-      @type rename_key
-      rename_rule1 MESSAGE log
-      rename_rule2 HOSTNAME hostname
-    </filter>
-    <match kubelet.**>
-       type elasticsearch
-       log_level info
-       include_tag_key true
-       logstash_prefix journal-log ## Prefix for creating an Elastic search index.
-       host $ELASTIC_SEARCH_IP
-       port $ELASTIC_SEARCH_PORT
-       logstash_format true
-       buffer_chunk_limit 2M
-       buffer_queue_limit 32
-       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
-       max_retry_wait 30
-       disable_retry_limit
-       num_threads 8
-    </match>
+
+    <source>
+      @type systemd
+      path /run/log/journal
+      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      pos_file /tmp/k8s-kubelet.pos
+      tag journal.kubelet
+      read_from_head true
+      strip_underscores true
+    </source>
 
     <source>
       type tail
@@ -110,18 +99,74 @@ data:
       read_from_head true
       keep_time_key true
     </source>
+
     <filter portworx.**>
       type kubernetes_metadata
     </filter>
+
     <filter portworx.**>
       @type rename_key
-      rename_rule1 kubernetes.host hostname
+      rename_rule3 kubernetes.host hostname
     </filter>
+
+    <filter journal.kubelet.**>
+      @type rename_key
+      rename_rule1 MESSAGE log
+      rename_rule2 HOSTNAME hostname
+    </filter>
+
+    <filter journal.dockerd.**>
+      @type rename_key
+      rename_rule1 MESSAGE log
+      rename_rule2 HOSTNAME hostname
+    </filter>
+
+    <filter **>
+      @type record_transformer
+      enable_ruby
+      <record>
+       guid "#{Random.new_seed}"
+      </record>
+    </filter>
+
+    <match journal.dockerd.**>
+       type elasticsearch_dynamic
+       log_level info
+       include_tag_key false
+       logstash_prefix journal.dockerd #${record['guid']} ## Prefix for creating an Elastic search index.
+       host $ELASTIC_SEARCH_IP
+       port $ELASTIC_SEARCH_PORT
+       logstash_format true
+       buffer_chunk_limit 2M
+       buffer_queue_limit 32
+       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
+       max_retry_wait 30
+       disable_retry_limit
+       num_threads 8
+    </match>
+
+    <match journal.kubelet.**>
+       type elasticsearch_dynamic
+       log_level info
+       include_tag_key false
+       logstash_prefix journal.kubelet #${record['guid']} ## Prefix for creating an Elastic search index.
+       host $ELASTIC_SEARCH_IP
+       port $ELASTIC_SEARCH_PORT
+       logstash_format true
+       buffer_chunk_limit 2M
+       buffer_queue_limit 32
+       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
+       max_retry_wait 30
+       disable_retry_limit
+       num_threads 8
+    </match>
+
     <match portworx.**>
        type elasticsearch
        log_level info
-       include_tag_key true
-       logstash_prefix px-log ## Prefix for creating an Elastic search index.
+       #index_name pxLog.${record['guid']}
+       include_tag_key false
+       logstash_prefix pxLog #${record['guid']} ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
@@ -160,6 +205,8 @@ spec:
           volumeMounts:
             - name: varlog
               mountPath: /var/log
+            - name: runlog
+              mountPath: /run/log
             - name: varlibdockercontainers
               mountPath: /var/lib/docker/containers
             - name: posloc
@@ -171,6 +218,9 @@ spec:
         - name: varlog
           hostPath:
             path: /var/log
+        - name: runlog
+          hostPath:
+            path: /run/log
         - name: varlibdockercontainers
           hostPath:
             path: /var/lib/docker/containers
