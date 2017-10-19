@@ -121,19 +121,11 @@ data:
       rename_rule2 HOSTNAME hostname
     </filter>
 
-    <filter **>
-      @type record_transformer
-      enable_ruby
-      <record>
-       guid "#{Random.new_seed}"
-      </record>
-    </filter>
-
     <match journal.dockerd.**>
        type elasticsearch_dynamic
        log_level info
        include_tag_key false
-       logstash_prefix journal.dockerd #${record['guid']} ## Prefix for creating an Elastic search index.
+       logstash_prefix journal.dockerd ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
@@ -149,7 +141,7 @@ data:
        type elasticsearch_dynamic
        log_level info
        include_tag_key false
-       logstash_prefix journal.kubelet #${record['guid']} ## Prefix for creating an Elastic search index.
+       logstash_prefix journal.kubelet ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
@@ -164,9 +156,8 @@ data:
     <match portworx.**>
        type elasticsearch
        log_level info
-       #index_name pxLog.${record['guid']}
        include_tag_key false
-       logstash_prefix pxLog #${record['guid']} ## Prefix for creating an Elastic search index.
+       logstash_prefix pxLog ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
