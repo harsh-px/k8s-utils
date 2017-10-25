@@ -62,12 +62,14 @@ kubectl delete -n kube-system configmap fluentd || true
 kubectl delete -n kube-system daemonSet fluentd || true
 
 cat <<EOF | kubectl create -f -
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: fluentd
   namespace: kube-system
 data:
+
   fluent.conf: |
     <source>
       @type systemd
@@ -91,6 +93,17 @@ data:
 
     <source>
       type tail
+      path /var/log/containers/kube-proxy*.log
+      pos_file /tmp/kube-proxy.log.pos
+      time_format %Y-%m-%dT%H:%M:%S.%N
+      tag kubeproxy.*
+      format json
+      read_from_head true
+      keep_time_key true
+    </source>
+
+    <source>
+      type tail
       path /var/log/containers/portworx*.log
       pos_file /tmp/px-container.log.pos
       time_format %Y-%m-%dT%H:%M:%S.%N
@@ -99,10 +112,6 @@ data:
       read_from_head true
       keep_time_key true
     </source>
-
-    <filter portworx.**>
-      type kubernetes_metadata
-    </filter>
 
     <filter portworx.**>
       @type rename_key
@@ -121,11 +130,15 @@ data:
       rename_rule2 HOSTNAME hostname
     </filter>
 
+    <filter **>
+      type kubernetes_metadata
+    </filter>
+
     <match journal.dockerd.**>
        type elasticsearch_dynamic
        log_level info
        include_tag_key false
-       logstash_prefix journal.dockerd ## Prefix for creating an Elastic search index.
+       logstash_prefix journal.dockerd.#indexUUID# ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
@@ -141,7 +154,7 @@ data:
        type elasticsearch_dynamic
        log_level info
        include_tag_key false
-       logstash_prefix journal.kubelet ## Prefix for creating an Elastic search index.
+       logstash_prefix journal.kubelet.#indexUUID# ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
@@ -157,7 +170,7 @@ data:
        type elasticsearch
        log_level info
        include_tag_key false
-       logstash_prefix pxLog ## Prefix for creating an Elastic search index.
+       logstash_prefix pxLog.#indexUUID# ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
@@ -188,6 +201,15 @@ spec:
     spec:
       serviceAccount: fluentd
       serviceAccountName: fluentd
+      initContainers:
+      - name: fluentd-init
+        image: hrishi/fluentd-initutils:v10
+        securityContext:
+          privileged: true
+        command: ['sh','-c','/usr/bin/init-fluentd.sh portworx-service']
+        volumeMounts:
+        - name: config
+          mountPath: /tmp
       containers:
         - name: fluentd
           image: hrishi/fluentd:v1
