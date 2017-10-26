@@ -19,7 +19,7 @@ done
 echo $pxClusterStatus
 echo $pxClusterStatus >> /usr/bin/clusterState
 
-indexID=$(echo $pxClusterStatus | jq '.["Id"]+"-"+.["UID"]')
+indexID=$(echo $pxClusterStatus | jq -r '.["Id"]+"-"+.["UID"]')
 
 echo "Using index ID: $indexID"
 
