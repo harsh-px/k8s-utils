@@ -84,22 +84,21 @@ data:
     <source>
       @type systemd
       path /var/log/journal
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
-      pos_file /tmp/k8s-kubelet.pos
-      tag journal.kubelet
+      filters [{ "_SYSTEMD_UNIT": "portworx.service" }]
+      pos_file /tmp/portworxservice.pos
+      tag journal.portworx
       read_from_head true
       strip_underscores true
     </source>
 
     <source>
-      type tail
-      path /var/log/containers/kube-proxy*.log
-      pos_file /tmp/kube-proxy.log.pos
-      time_format %Y-%m-%dT%H:%M:%S.%N
-      tag kubeproxy.*
-      format json
+      @type systemd
+      path /var/log/journal
+      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      pos_file /tmp/k8s-kubelet.pos
+      tag journal.kubelet
       read_from_head true
-      keep_time_key true
+      strip_underscores true
     </source>
 
     <source>
@@ -130,6 +129,12 @@ data:
       rename_rule2 HOSTNAME hostname
     </filter>
 
+    <filter journal.portworx.**>
+      @type rename_key
+      rename_rule1 MESSAGE log
+      rename_rule2 HOSTNAME hostname
+    </filter>
+
     <filter **>
       type kubernetes_metadata
     </filter>
@@ -139,6 +144,22 @@ data:
        log_level info
        include_tag_key false
        logstash_prefix journal.dockerd.#indexUUID# ## Prefix for creating an Elastic search index.
+       host $ELASTIC_SEARCH_IP
+       port $ELASTIC_SEARCH_PORT
+       logstash_format true
+       buffer_chunk_limit 2M
+       buffer_queue_limit 32
+       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
+       max_retry_wait 30
+       disable_retry_limit
+       num_threads 8
+    </match>
+
+    <match journal.portworx.**>
+       type elasticsearch_dynamic
+       log_level info
+       include_tag_key false
+       logstash_prefix journal.portworx.#indexUUID# ## Prefix for creating an Elastic search index.
        host $ELASTIC_SEARCH_IP
        port $ELASTIC_SEARCH_PORT
        logstash_format true
