@@ -263,5 +263,5 @@ spec:
             name: fluentd
         - name: posloc
           hostPath:
-            path: /tmp
+            path: /mnt
 EOF
