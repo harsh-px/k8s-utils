@@ -1,11 +1,11 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
-  metadata:
-    namespac: prod
-    name: pxtestsnap-ns.prod
-    annotations:
-      volume.beta.kubernetes.io/storage-class: pxtestsc
-      px/snapshot-source-pvc: pxtestpvc
+metadata:
+  namespace: prod
+  name: pxtestsnap-ns.prod
+  annotations:
+    volume.beta.kubernetes.io/storage-class: pxtestsc
+    px/snapshot-source-pvc: pxtestpvc
 spec:
   resources:
     requests:
