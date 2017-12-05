@@ -1,6 +1,8 @@
 # -*- mode: ruby -*-
 # vim:ft=ruby:sw=3:et:
 
+### Thanks to Zoran Rajic (zox@portworx.com) for writing this Vagrantfile !
+
 vm_nodes = {            # EDIT to specify VM node names, and their private IP (vboxnet#)
    'k1m' => "192.168.56.70",
    'k1n1' => "192.168.56.71",
