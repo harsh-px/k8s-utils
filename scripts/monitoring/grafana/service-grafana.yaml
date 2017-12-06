@@ -1,0 +1,17 @@
+﻿kind: Service
+apiVersion: v1
+metadata:
+  name: px-grafana
+  namespace: tectonic-system
+  labels:
+    k8s-app: px-grafana
+spec:
+  ports:
+    - name: web
+      protocol: TCP
+      port: 3000
+      nodePort: 31748
+  selector:
+    k8s-app: px-grafana
+  type: NodePort
+  sessionAffinity: None

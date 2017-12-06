@@ -1,0 +1,91 @@
+﻿kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: px-grafana
+  namespace: tectonic-system
+  labels:
+    k8s-app: px-grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: px-grafana
+  template:
+    metadata:
+      labels:
+        k8s-app: px-grafana
+    spec:
+      volumes:
+        - name: grafana-storage
+          emptyDir:
+            sizeLimit: '0'
+        - name: grafana-dashboards
+          configMap:
+            name: px-grafana-dashboards
+            defaultMode: 420
+      containers:
+        - resources:
+            limits:
+              cpu: 200m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          name: px-grafana
+          env:
+            - name: GF_AUTH_BASIC_ENABLED
+              value: 'true'
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: 'true'
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: px-grafana-credentials
+                  key: user
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: px-grafana-credentials
+                  key: password
+          ports:
+            - name: web
+              containerPort: 3000
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: grafana-storage
+              mountPath: /var/grafana-storage
+          image: 'quay.io/coreos/monitoring-grafana:4.5.2'
+        - resources:
+            limits:
+              cpu: 100m
+              memory: 32Mi
+            requests:
+              cpu: 50m
+              memory: 16Mi
+          name: px-grafana-watcher
+          env:
+            - name: GRAFANA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: px-grafana-credentials
+                  key: user
+            - name: GRAFANA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: px-grafana-credentials
+                  key: password
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: grafana-dashboards
+              mountPath: /var/grafana-dashboards
+          image: 'quay.io/coreos/grafana-watcher:v0.0.8'
+          args:
+            - '--watch-dir=/var/grafana-dashboards'
+            - '--grafana-url=http://localhost:3000'
+      restartPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
