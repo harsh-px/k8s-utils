@@ -1,12 +1,22 @@
 #!/bin/bash
 
-if [ -z "$ELASTIC_SEARCH_IP" ]; then
-    echo "[ERROR] ELASTIC_SEARCH_IP environment variable not set."
+if [ -z "$AWS_KEY_ID" ]; then
+    echo "[ERROR] AWS_KEY_ID environment variable not set."
     exit 1
 fi
 
-if [ -z "$ELASTIC_SEARCH_PORT" ]; then
-    echo "[ERROR] ELASTIC_SEARCH_PORT environment variable not set."
+if [ -z "$AWS_SECRET_KEY_ID" ]; then
+    echo "[ERROR] AWS_SECRET_KEY_ID environment variable not set."
+    exit 1
+fi
+
+if [ -z "$S3_BUCKET" ]; then
+    echo "[ERROR] S3_BUCKET environment variable not set."
+    exit 1
+fi
+
+if [ -z "$S3_REGION" ]; then
+    echo "[ERROR] S3_REGION environment variable not set."
     exit 1
 fi
 
@@ -15,13 +25,26 @@ kubectl delete -n kube-system sa fluentd || true
 kubectl delete -n kube-system clusterrole fluentd || true
 kubectl delete -n kube-system clusterrolebinding fluentd || true
 
-cat <<EOF | kubectl create -f -
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fluentd-px-secrets
+type: Opaque
+data:
+  AWS_KEY_ID: $AWS_KEY_ID
+  AWS_SECRET_KEY_ID: $AWS_SECRET_KEY_ID
+  S3_BUCKET: $S3_BUCKET
+  S3_REGION: $S3_REGION
+EOF
+
+cat <<EOF | kubectl apply -f -
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: fluentd
   namespace: kube-system
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -39,7 +62,6 @@ rules:
   - get
   - list
   - watch
-
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -56,12 +78,6 @@ subjects:
 - kind: ServiceAccount
   name: default
   namespace: kube-system
-EOF
-
-kubectl delete -n kube-system configmap fluentd || true
-kubectl delete -n kube-system daemonSet fluentd || true
-
-cat <<EOF | kubectl create -f -
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -69,14 +85,23 @@ metadata:
   name: fluentd
   namespace: kube-system
 data:
-
   fluent.conf: |
+   <source>
+     @type systemd
+     path /var/log/journal
+     filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+     pos_file /tmp/docker-service.pos
+     tag journal.dockerd
+     read_from_head true
+     strip_underscores true
+   </source>
+
     <source>
       @type systemd
       path /var/log/journal
-      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
-      pos_file /tmp/dockerservice.pos
-      tag journal.dockerd
+      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      pos_file /tmp/k8s-kubelet.pos
+      tag journal.kubelet
       read_from_head true
       strip_underscores true
     </source>
@@ -87,16 +112,6 @@ data:
       filters [{ "_SYSTEMD_UNIT": "portworx.service" }]
       pos_file /tmp/portworxservice.pos
       tag journal.portworx
-      read_from_head true
-      strip_underscores true
-    </source>
-
-    <source>
-      @type systemd
-      path /var/log/journal
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
-      pos_file /tmp/k8s-kubelet.pos
-      tag journal.kubelet
       read_from_head true
       strip_underscores true
     </source>
@@ -138,70 +153,66 @@ data:
     <filter **>
       type kubernetes_metadata
     </filter>
-
-    <match journal.dockerd.**>
-       type elasticsearch_dynamic
-       log_level info
-       include_tag_key false
-       logstash_prefix journal.dockerd.#indexUUID# ## Prefix for creating an Elastic search index.
-       host $ELASTIC_SEARCH_IP
-       port $ELASTIC_SEARCH_PORT
-       logstash_format true
-       buffer_chunk_limit 2M
-       buffer_queue_limit 32
-       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
-       max_retry_wait 30
-       disable_retry_limit
-       num_threads 8
+    
+    <match journal.portworx.**>
+       @type s3
+       aws_key_id #AWS_KEY_ID#
+       aws_sec_key #AWS_SECRET_KEY_ID#
+       s3_bucket #S3_BUCKET#
+       s3_region #S3_REGION#
+       path logs/
+       buffer_path /var/log/journal-portworx/s3
+       s3_object_key_format #indexUUID#_%{path}%{time_slice}_%{index}.%{file_extension}          
+       time_slice_format %Y%m%d%H
+       time_slice_wait 3m
+       utc
+       buffer_chunk_limit 256m
     </match>
 
-    <match journal.portworx.**>
-       type elasticsearch_dynamic
-       log_level info
-       include_tag_key false
-       logstash_prefix journal.portworx.#indexUUID# ## Prefix for creating an Elastic search index.
-       host $ELASTIC_SEARCH_IP
-       port $ELASTIC_SEARCH_PORT
-       logstash_format true
-       buffer_chunk_limit 2M
-       buffer_queue_limit 32
-       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
-       max_retry_wait 30
-       disable_retry_limit
-       num_threads 8
+    <match journal.dockerd.**>
+       @type s3
+       aws_key_id #AWS_KEY_ID#
+       aws_sec_key #AWS_SECRET_KEY_ID#
+       s3_bucket #S3_BUCKET#
+       s3_region #S3_REGION#
+       path logs/
+       buffer_path /var/log/journal-dockerd/s3
+       s3_object_key_format #indexUUID#_%{path}%{time_slice}_%{index}.%{file_extension}          
+       time_slice_format %Y%m%d%H
+       time_slice_wait 3m
+       utc
+       buffer_chunk_limit 256m
     </match>
 
     <match journal.kubelet.**>
-       type elasticsearch_dynamic
-       log_level info
-       include_tag_key false
-       logstash_prefix journal.kubelet.#indexUUID# ## Prefix for creating an Elastic search index.
-       host $ELASTIC_SEARCH_IP
-       port $ELASTIC_SEARCH_PORT
-       logstash_format true
-       buffer_chunk_limit 2M
-       buffer_queue_limit 32
-       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
-       max_retry_wait 30
-       disable_retry_limit
-       num_threads 8
+       @type s3
+       aws_key_id #AWS_KEY_ID#
+       aws_sec_key #AWS_SECRET_KEY_ID#
+       s3_bucket #S3_BUCKET#
+       s3_region #S3_REGION#
+       path logs/
+       buffer_path /var/log/journal-kubelet/s3
+       s3_object_key_format #indexUUID#_%{path}%{time_slice}_%{index}.%{file_extension}          
+       time_slice_format %Y%m%d%H
+       time_slice_wait 3m
+       utc
+       buffer_chunk_limit 256m
     </match>
 
     <match portworx.**>
-       type elasticsearch
-       log_level info
-       include_tag_key false
-       logstash_prefix pxLog.#indexUUID# ## Prefix for creating an Elastic search index.
-       host $ELASTIC_SEARCH_IP
-       port $ELASTIC_SEARCH_PORT
-       logstash_format true
-       buffer_chunk_limit 2M
-       buffer_queue_limit 32
-       flush_interval 60s  # flushes events ever minute. Can be configured as needed.
-       max_retry_wait 30
-       disable_retry_limit
-       num_threads 8
-    </match>
+       @type s3
+       aws_key_id #AWS_KEY_ID#
+       aws_sec_key #AWS_SECRET_KEY_ID#
+       s3_bucket #S3_BUCKET#
+       s3_region #S3_REGION#
+       path logs/
+       buffer_path /var/log/px-container/s3
+       s3_object_key_format #indexUUID#_%{path}%{time_slice}_%{index}.%{file_extension}          
+       time_slice_format %Y%m%d%H
+       time_slice_wait 1m
+       utc
+       buffer_chunk_limit 256m
+    </match>    
 ---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -224,10 +235,33 @@ spec:
       serviceAccountName: fluentd
       initContainers:
       - name: fluentd-init
-        image: harshpx/fluentd-init:latest
+        image: hrishi/fluentd-initutils-s3:v1
+        imagePullPolicy: Always
         securityContext:
           privileged: true
-        command: ['sh','-c','/usr/bin/init-fluentd.sh']
+        command: ['/bin/sh']
+        args: ['-c','/usr/bin/init-fluentd.sh portworx-service']
+        env:
+        - name: "AWS_KEY_ID"
+          valueFrom:
+            secretKeyRef:
+              name: fluentd-px-secrets
+              key: AWS_KEY_ID
+        - name: "AWS_SECRET_KEY_ID"
+          valueFrom:
+            secretKeyRef:
+              name: fluentd-px-secrets
+              key: AWS_SECRET_KEY_ID
+        - name: "S3_BUCKET"
+          valueFrom:
+            secretKeyRef:
+              name: fluentd-px-secrets
+              key: S3_BUCKET
+        - name: "S3_REGION"
+          valueFrom:
+            secretKeyRef:
+              name: fluentd-px-secrets
+              key: S3_REGION
         volumeMounts:
         - name: config
           mountPath: /tmp
