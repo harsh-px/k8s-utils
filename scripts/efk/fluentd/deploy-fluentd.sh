@@ -30,6 +30,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: fluentd-px-secrets
+  namespace: kube-system
 type: Opaque
 data:
   AWS_KEY_ID: $AWS_KEY_ID
