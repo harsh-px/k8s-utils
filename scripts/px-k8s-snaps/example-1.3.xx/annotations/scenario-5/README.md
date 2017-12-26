@@ -1,0 +1,1 @@
+Namespace supplied, but snap PVC is in different k8s namespace 

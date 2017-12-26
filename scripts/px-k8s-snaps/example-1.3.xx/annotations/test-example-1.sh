@@ -11,7 +11,5 @@ kubectl apply -f px-snap-create.yaml
 
 echo "TODO: writing more data for the initial volume"
 
-
 echo "Restoring pod from previous snapshot..."
-kubectl apply -f px-snap-restore.yaml
 kubectl apply -f pod-with-restored-vol.yaml
