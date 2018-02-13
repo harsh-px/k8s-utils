@@ -27,10 +27,17 @@ spec:
                 operator: NotIn
                 values:
                 - "false"
+#        seLinuxOptions:
+#          user: system_u
+#          role: object_r
+#          type: svirt_sandbox_file_t
+#          level: s0:c0,c1023
       containers:
       - name: postgres
         image: postgres:9.5
         imagePullPolicy: "IfNotPresent"
+        securityContext:
+          privileged: true
         ports:
         - containerPort: 5432
         env:
