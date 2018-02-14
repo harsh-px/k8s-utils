@@ -1,27 +1,11 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: nginx-service
-spec:
-  selector:
-    app: nginx
-  type: NodePort
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30304
----
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 1 # tells deployment to run 1 pods matching the template
-  template: # create pods using pod definition in this template
+  replicas: 1
+  template:
     metadata:
-      # unlike px-nginx-app-with-pod-affinity.yaml, the name is not included in the meta data as a unique name is
-      # generated from the deployment name
       labels:
         app: nginx
     spec:
@@ -30,15 +14,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: px/running
-                operator: NotIn
-                values:
-                - "false"
               - key: px/enabled
                 operator: NotIn
                 values:
                 - "false"
-      hostNetwork: true
       containers:
       - name: nginx
         image: nginx
@@ -50,4 +29,4 @@ spec:
       volumes:
       - name: nginx-persistent-storage
         persistentVolumeClaim:
-          claimName: pxtestpvc
+          claimName: name.snap001-source.pxtestpvc

@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+  metadata:
+    name: ns.default-name.pxtestrestore
+    annotations:
+      volume.beta.kubernetes.io/storage-class: px-nginx-sc
+      px/snapshot-source-pvc: ns.default-name.pxtestsnap
+spec:
+  resources:
+    requests:
+      storage: 1Gi

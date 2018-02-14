@@ -2,7 +2,7 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1beta1
 metadata:
-    name: px-nginx-sc
+    name: pxtestsc
 provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "2"
@@ -12,8 +12,9 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
    name: pxtestpvc
+   namespace: dev
    annotations:
-     volume.beta.kubernetes.io/storage-class: px-nginx-sc
+     volume.beta.kubernetes.io/storage-class: pxtestsc
 spec:
    accessModes:
      - ReadWriteOnce

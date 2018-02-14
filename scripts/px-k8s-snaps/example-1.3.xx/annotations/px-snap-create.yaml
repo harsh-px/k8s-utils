@@ -7,7 +7,7 @@ metadata:
     px/snapshot-source-pvc: pxtestpvc
 spec:
   accessModes:
-    - ReadWriteOnce
+     - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
