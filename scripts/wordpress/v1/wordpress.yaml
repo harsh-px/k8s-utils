@@ -32,7 +32,6 @@ spec:
       containers:
       - image: wordpress:4.8-apache
         name: wordpress
-        imagePullPolicy: Never
         env:
         - name: WORDPRESS_DB_HOST
           value: wordpress-mysql

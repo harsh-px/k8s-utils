@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 DEFAULT_DUMP_LOCATION=/tmp/px-s3-logs-`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`
 
@@ -32,6 +32,7 @@ mkdir -p ${DEFAULT_DUMP_LOCATION}
 echo "Fetching S3 objects from bucket:${BUCKET} with prefix:${PREFIX}"
 
 for obj in `aws s3api list-objects --bucket "${BUCKET}" --prefix "${PREFIX}"  --query "sort_by(Contents,&LastModified)" --output json | jq -c  '.[] | .Key'`; do
+		echo "doing get on $obj.."
     aws s3api get-object --bucket ${BUCKET} --key "${obj//\"}" ${DEFAULT_DUMP_LOCATION}/$(basename "${obj//\"}")
 
     #Extract
