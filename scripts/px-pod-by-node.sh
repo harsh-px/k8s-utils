@@ -17,7 +17,7 @@ fi
 
 echo "user requested $operation on PX pods on node: $node_name"
 
-function pods_by_node_name() {
+function px_pods_by_node_name() {
     i=$1
     ns=`kubectl get pvc --all-namespaces | grep $i | awk -F' ' '{print $1}'`;
     claim_name=`kubectl get pvc --all-namespaces | grep $i | awk -F' ' '{print $2}'`;
@@ -42,5 +42,5 @@ function pods_by_node_name() {
 # loop over all pvs
 for i in $(kubectl exec -it $portworx_pod_name -n kube-system /opt/pwx/bin/pxctl v l | grep -v NAME | grep attached | awk -F' ' '{print $2}');
 do
-    pods_by_node_name $i
+    px_pods_by_node_name $i
 done
