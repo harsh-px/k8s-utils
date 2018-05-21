@@ -1,0 +1,15 @@
+##### Portworx persistent volume claim
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: mysql-data
+   annotations:
+     app: mysql
+     stack: wordpress
+spec:
+   storageClassName: px-mysql-sc
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 8Gi

@@ -1,0 +1,17 @@
+apiVersion: apis.portworx.con/v1alpha1
+kind: PortworxRule
+metadata:
+   name: px-presnap-rules
+spec:
+   - selector:
+       app: mysql
+     action:
+     - type: command
+       value: "first command"
+     - type: command
+       value: "second command"
+   - selector:
+       app: wordpress
+     action:
+     - type: command
+       value: "first command"

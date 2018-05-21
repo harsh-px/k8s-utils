@@ -1,0 +1,9 @@
+apiVersion: volumesnapshot.external-storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: mysql-3d-snapshot
+  annotations:
+    portworx/stack: "wordpress"
+    portworx/snap-rule: "px-presnap-rules"
+spec:
+  persistentVolumeClaimName: mysql-data
