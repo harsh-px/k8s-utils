@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
    name: mysql-data
-   annotations:
+   labels:
      app: mysql
      stack: wordpress
 spec:

@@ -1,17 +1,16 @@
 apiVersion: apis.portworx.con/v1alpha1
 kind: PortworxRule
 metadata:
-   name: px-presnap-rules
+   name: px-presnap-rule
 spec:
    - selector:
        app: mysql
      action:
      - type: command
-       value: "first command"
-     - type: command
-       value: "second command"
+       background: true
+       value: mysql --user=root --password=$MYSQL_ROOT_PASSWORD -Bse  "flush tables with read lock"
    - selector:
        app: wordpress
      action:
      - type: command
-       value: "first command"
+       value: "echo TBD"
