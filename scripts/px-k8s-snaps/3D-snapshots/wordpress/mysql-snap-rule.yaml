@@ -10,7 +10,7 @@ spec:
        background: true
        value: mysql --user=root --password=$MYSQL_ROOT_PASSWORD -Bse  "flush tables with read lock"
    - selector:
-       app: wordpress
+       app: wordpress-web
      action:
      - type: command
        value: "echo TBD"
