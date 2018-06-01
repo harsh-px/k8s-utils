@@ -3,7 +3,7 @@ kind: VolumeSnapshot
 metadata:
   name: wordpress-3d-snapshot
   annotations:
-    portworx/stack: wordpress
-    portworx/snap-rule: px-presnap-rule
+    portworx.selector/stack: wordpress
+    stork.rule/mysql-pvc-1: px-presnap-rule
 spec:
-  persistentVolumeClaimName: mysql-data
+  persistentVolumeClaimName: mysql-pvc-1
