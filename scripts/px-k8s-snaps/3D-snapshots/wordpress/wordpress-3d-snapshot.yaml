@@ -4,6 +4,6 @@ metadata:
   name: wordpress-3d-snapshot
   annotations:
     portworx.selector/stack: wordpress
-    stork.rule/mysql-pvc-1: px-presnap-rule
+    stork.rule/pre-snapshot: px-presnap-rule
 spec:
   persistentVolumeClaimName: mysql-pvc-1
