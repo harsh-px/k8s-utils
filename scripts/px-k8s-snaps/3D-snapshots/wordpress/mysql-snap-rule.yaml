@@ -1,16 +1,17 @@
-apiVersion: apis.portworx.con/v1alpha1
-kind: PortworxRule
+apiVersion: apis.stork.com/v1alpha1
+kind: StorkRule
 metadata:
-   name: px-presnap-rule
+  name: wp-presnap-rule
 spec:
-   - selector:
-       app: mysql
-     action:
-     - type: command
-       background: true
-       value: mysql --user=root --password=$MYSQL_ROOT_PASSWORD -Bse  "flush tables with read lock"
-   - selector:
-       app: wordpress-web
-     action:
-     - type: command
-       value: "echo TBD"
+  - selector:
+      app: mysql
+    action:
+    - type: command
+      background: true
+      value: mysql --user=root --password=$MYSQL_ROOT_PASSWORD -Bse  "flush tables with read lock"
+  - selector:
+      app: wordpress-web
+    action:
+    - type: command
+      runOnAllPods: false
+      value: "uname -a" #TBD
