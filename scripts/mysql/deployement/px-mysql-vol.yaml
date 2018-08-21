@@ -6,12 +6,15 @@ metadata:
 provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "2"
+   group: "mysql"
 ---
 ##### Portworx persistent volume claim
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
    name: px-mysql-pvc
+   labels:
+     foo: bar
    annotations:
      volume.beta.kubernetes.io/storage-class: px-mysql-sc
 spec:

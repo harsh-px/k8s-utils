@@ -1,4 +1,4 @@
-apiVersion: apis.stork.com/v1alpha1
+apiVersion: stork.com/v1alpha1
 kind: StorkRule
 metadata:
   name: wp-presnap-rule

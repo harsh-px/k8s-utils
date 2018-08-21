@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     component: kibana
-  type: LoadBalancer
+  type: NodePort
   ports:
   - name: http
     port: 80

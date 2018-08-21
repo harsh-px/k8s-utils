@@ -65,9 +65,9 @@ data:
   fluent.conf: |
    <source>
      @type systemd
-     path /var/log/journal
+     path /run/log/journal
      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
-     pos_file /tmp/docker-service.pos
+     pos_file /mnt/docker-service.pos
      tag journal.dockerd
      read_from_head true
      strip_underscores true
@@ -75,9 +75,9 @@ data:
 
     <source>
       @type systemd
-      path /var/log/journal
+      path /run/log/journal
       filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
-      pos_file /tmp/k8s-kubelet.pos
+      pos_file /mnt/k8s-kubelet.pos
       tag journal.kubelet
       read_from_head true
       strip_underscores true
@@ -85,9 +85,9 @@ data:
 
     <source>
       @type systemd
-      path /var/log/journal
+      path /run/log/journal
       filters [{ "_SYSTEMD_UNIT": "portworx.service" }]
-      pos_file /tmp/k8s-kubelet.pos
+      pos_file /mnt/k8s-kubelet.pos
       tag journal.portworx
       read_from_head true
       strip_underscores true
@@ -124,9 +124,9 @@ data:
           @type elasticsearch_dynamic
           log_level info
           include_tag_key false
-          logstash_prefix #indexUUID#.journal.dockerd ## Prefix for creating an Elastic search index.
-          host #ELASTICSEARCH_HOST# ## Hostname of the ES cluster.
-          port #ELASTICSEARCH_PORT#
+          logstash_prefix harsh-cluster.journal.dockerd ## Prefix for creating an Elastic search index.
+          host 10.108.253.86
+          port 9200
           logstash_format true
           buffer_chunk_limit 512k
           buffer_queue_limit 32
@@ -140,9 +140,9 @@ data:
           @type elasticsearch_dynamic
           log_level info
           include_tag_key false
-          logstash_prefix #indexUUID#.journal.portworx ## Prefix for creating an Elastic search index.
-          host #ELASTICSEARCH_HOST# ## Hostname of the ES cluster.
-          port #ELASTICSEARCH_PORT#
+          logstash_prefix harsh-cluster.journal.portworx ## Prefix for creating an Elastic search index.
+          host 10.108.253.86
+          port 9200
           logstash_format true
           buffer_chunk_limit 512k
           buffer_queue_limit 32
@@ -156,9 +156,9 @@ data:
           @type elasticsearch_dynamic
           log_level info
           include_tag_key false
-          logstash_prefix #indexUUID#.journal.kubelet ## Prefix for creating an Elastic search index.
-          host #ELASTICSEARCH_HOST# ## Hostname of the ES cluster.
-          port #ELASTICSEARCH_PORT#
+          logstash_prefix harsh-cluster.journal.kubelet ## Prefix for creating an Elastic search index.
+          host 10.108.253.86
+          port 9200
           logstash_format true
           buffer_chunk_limit 512k
           buffer_queue_limit 32
@@ -197,9 +197,9 @@ spec:
         args: ['-c','/usr/bin/init-fluentd.sh portworx-service']
         env:
         - name: "ELASTICSEARCH_HOST"
-          value: "$ELASTICSEARCH_HOST"
+          value: "10.108.253.86"
         - name: "ELASTICSEARCH_PORT"
-          value: "$ELASTICSEARCH_PORT"
+          value: "9200"
         volumeMounts:
         - name: config
           mountPath: /tmp

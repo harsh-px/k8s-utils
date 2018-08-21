@@ -5,8 +5,8 @@ metadata:
     name: px-nginx-shared-sc
 provisioner: kubernetes.io/portworx-volume
 parameters:
-   repl: "2"
    shared: "true"
+   repl: "2"
 ---
 ##### Portworx persistent volume claim
 kind: PersistentVolumeClaim
