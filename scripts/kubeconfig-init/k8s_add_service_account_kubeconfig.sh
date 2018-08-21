@@ -11,7 +11,7 @@ fi
 SERVICE_ACCOUNT_NAME=$1
 NAMESPACE="$2"
 TARGET_FOLDER="${TARGET_FOLDER:-/etc/pwx}"
-KUBECFG_FILE_NAME="$TARGET_FOLDER/px-kubeconfig"
+KUBECFG_FILE_NAME="$TARGET_FOLDER/kubeconfig"
 
 create_target_folder() {
     echo -n "Creating target directory to hold files in ${TARGET_FOLDER}..."
