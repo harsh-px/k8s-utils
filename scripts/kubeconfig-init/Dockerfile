@@ -1,4 +1,4 @@
-FROM lachlanevenson/k8s-kubectl:v1.9.10
+FROM lachlanevenson/k8s-kubectl:v1.7.12
 
 RUN apk update && apk upgrade && apk add bash jq
 
