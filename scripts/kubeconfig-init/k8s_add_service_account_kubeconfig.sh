@@ -19,6 +19,44 @@ create_target_folder() {
     printf "done"
 }
 
+create_cluster_roles() {
+	echo -n "Creating cluster role and bindings..."
+cat <<EOF | kubectl apply -f -
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+   name: node-get-put-list-role
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["watch", "get", "update", "list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["delete", "get", "list"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "persistentvolumes"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "update", "create"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: node-role-binding
+subjects:
+- kind: ServiceAccount
+  name: px-account
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: node-get-put-list-role
+  apiGroup: rbac.authorization.k8s.io
+---
+EOF
+}
+
 create_service_account() {
     echo -e "\\nCreating a service account: ${SERVICE_ACCOUNT_NAME} on namespace: ${NAMESPACE}"
     kubectl get sa "${SERVICE_ACCOUNT_NAME}" --namespace "${NAMESPACE}" || kubectl create sa "${SERVICE_ACCOUNT_NAME}" --namespace "${NAMESPACE}"
@@ -85,6 +123,7 @@ set_kube_config_values() {
 }
 
 create_target_folder
+create_cluster_roles
 create_service_account
 get_secret_name_from_service_account
 extract_ca_crt_from_secret
