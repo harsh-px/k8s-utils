@@ -1,0 +1,30 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: data-maria-0
+   labels:
+     app: maria
+spec:
+  selector:
+    matchLabels:
+      name: pv-data-maria-0
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-data-maria-0
+  labels:
+    name: pv-data-maria-0
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  portworxVolume:
+    volumeID: pv-data-maria-0

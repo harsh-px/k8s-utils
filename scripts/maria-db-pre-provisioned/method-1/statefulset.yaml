@@ -1,0 +1,36 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: maria
+spec:
+  serviceName: "maria"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: maria
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: maria
+        image: mariadb:10.1
+        env:
+          # Use secret in real usage
+        - name: MYSQL_ROOT_PASSWORD
+          value: test
+        ports:
+        - containerPort: 3306
+          name: maria
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      annotations:
+        volume.beta.kubernetes.io/storage-class: portworx-mysql-2
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
