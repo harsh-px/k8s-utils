@@ -1,0 +1,23 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: inter-pool-placement
+spec:
+  affinity:
+    poolAffinity:
+      - required: true        # OPTIONAL
+        labelSelector:
+          matchExpressions:
+          - key: media_type
+            operator: In      # NotIn, Exists, DoesNotExist, Gt, Lt
+            values:
+            - "SSD"
+    poolAntiAffinity:
+      - required: false       # OPTIONAL
+        weight: 100           # OPTIONAL
+        labelSelector:
+          matchExpressions:
+          - key: media_type
+            operator: In
+            values:
+            - "SATA"
