@@ -1,15 +1,16 @@
 apiVersion: stork.libopenstorage.org/v1alpha1
 kind: VolumePlacementStrategy
 metadata:
-  name: volume-node-placement
+  name: tier-2-3-volume-anti-affinity
 spec:
   affinity:
-    nodeAffinity:
-      - required: true
+    volumeAntiAffinity:
+      - enforcement: required             # Can be "preferred" or "required" (default)
+        weight: 100
         labelSelector:
           matchExpressions:
           - key: tier
-            operator: In   # NotIn, Exists, DoesNotExist, Gt, Lt
+            operator: In
             values:
             - T2
             - T3

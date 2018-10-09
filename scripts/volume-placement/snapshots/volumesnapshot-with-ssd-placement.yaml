@@ -4,6 +4,6 @@ metadata:
   name: mysql-snapshot
   namespace: default
   annotations:
-    stork/placement: "pool-placement-ssd"
+    stork/placement: "ssd-pool-placement"
 spec:
   persistentVolumeClaimName: mysql-data

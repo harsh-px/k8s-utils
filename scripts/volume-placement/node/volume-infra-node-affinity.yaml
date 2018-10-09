@@ -1,0 +1,16 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: volume-infra-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      - enforcement: preferred             # Can be "preferred" or "required" (default)
+        labelSelector:
+          matchExpressions:
+          - key: "kubernetes.io/hostname"  # Can be any label on the k8s node
+            operator: In                   # NotIn, Exists, DoesNotExist, Gt, Lt
+            values:
+            - "infra-01"
+            - "infra-02"
+            - "infra-03"

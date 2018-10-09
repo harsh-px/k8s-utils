@@ -1,0 +1,14 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: tier-1-volume-affinity
+spec:
+  affinity:
+    volumeAffinity:
+      - enforcement: preferred   # Can be "preferred" or "required" (default)
+        labelSelector:
+          matchExpressions:
+          - key: tier
+            operator: In        # NotIn, Exists, DoesNotExist, Gt, Lt
+            values:
+            - T1
