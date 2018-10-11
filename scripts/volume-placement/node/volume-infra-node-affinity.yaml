@@ -5,8 +5,8 @@ metadata:
 spec:
   affinity:
     nodeAffinity:
-      - enforcement: preferred             # Can be "preferred" or "required" (default)
-        labelSelector:
+      - enforcement: required              # Can be "preferred" or "required" (default)
+        labelSelector: 
           matchExpressions:
           - key: "kubernetes.io/hostname"  # Can be any label on the k8s node
             operator: In                   # NotIn, Exists, DoesNotExist, Gt, Lt

@@ -1,16 +1,14 @@
 apiVersion: stork.libopenstorage.org/v1alpha1
 kind: VolumePlacementStrategy
 metadata:
-  name: tier-2-3-volume-anti-affinity
+  name: cassandra-volume-anti-affinity
 spec:
   affinity:
     volumeAntiAffinity:
       - enforcement: required             # Can be "preferred" or "required" (default)
-        weight: 100
         labelSelector:
           matchExpressions:
-          - key: tier
+          - key: app
             operator: In
             values:
-            - T2
-            - T3
+            - cassandra
