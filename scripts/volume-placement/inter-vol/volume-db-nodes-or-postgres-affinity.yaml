@@ -1,0 +1,24 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: volume-db-nodes-or-postgres-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      - enforcement: preferred
+        weight: 200
+        labelSelector: 
+          matchExpressions:
+          - key: node_type 
+            operator: In
+            values:
+            - db_hardware
+    volumeAffinity:
+      - enforcement: preferred 
+        weight: 100
+        labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In      
+            values:
+            - postgres
