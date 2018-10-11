@@ -5,7 +5,7 @@ metadata:
 spec:
   affinity:
     poolAffinity:
-      - enforcement: preferred     # Can be "preferred" or "required" (default)
+      - enforcement: required      # Can be "preferred" or "required" (default)
         labelSelector:
           matchExpressions:
           - key: media_type
