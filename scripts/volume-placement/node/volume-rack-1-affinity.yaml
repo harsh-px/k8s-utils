@@ -1,0 +1,14 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: us-east-1a-zone-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      - enforcement: required                              # Can be "preferred" or "required" (default)
+        labelSelector: 
+          matchExpressions:
+          - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
+            operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
+            values:
+            - "rack-1"
