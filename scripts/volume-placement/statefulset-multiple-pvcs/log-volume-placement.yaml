@@ -1,0 +1,22 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: ssd-pool-placement
+spec:
+  affinity:
+    volumeAntiAffinity:
+      - enforcement: required
+        labelSelector:
+          matchExpressions:
+          - key: type
+            operator: NotIn
+            values:
+            - log
+    poolAffinity:
+      - enforcement: required      # Can be "preferred" or "required" (default)
+        labelSelector:
+          matchExpressions:
+          - key: media_type
+            operator: In           # NotIn, Exists, DoesNotExist, Gt, Lt
+            values:
+            - "SSD"

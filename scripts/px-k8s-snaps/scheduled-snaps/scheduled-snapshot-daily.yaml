@@ -1,0 +1,32 @@
+
+apiVersion: volumesnapshot.external-storage.k8s.io/v1
+kind: SnapshotSchedule
+metadata:
+  name: mysql-snapshot-schedule
+spec:
+  persistentVolumeClaimName: mysql-data
+  schedules:
+  - periodicSpec:
+      retainPolicy:
+        count: 10                   # OPTIONAL Keeps last 10 snapshots
+      scheduleAt:                   # OPTIONAL
+      - 9:00
+      - 16:00
+  - dailySpec:
+      retainPolicy:
+        count: 6                   # OPTIONAL Keeps last 10 snapshots
+      scheduleAt:                   # OPTIONAL
+      - 9:00
+      - 16:00
+  - weeklySpec:
+      retainPolicy:
+        count: 4
+      scheduleOn:
+      - Sunday
+      - Wednesday
+  - monthlySpec:
+      retainPolicy:
+        count: 2
+      scheduleOn:
+      - 1
+      - 15

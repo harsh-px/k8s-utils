@@ -1,0 +1,30 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: data-collocate-with-log-placement
+spec:
+  affinity:
+    volumeAffinity:
+      - enforcement: required
+        labelSelector:
+          matchExpressions:
+          - key: type
+            operator: In
+            values:
+            - log
+    volumeAntiAffinity:
+      - enforcement: required
+        labelSelector:
+          matchExpressions:
+          - key: type
+            operator: In
+            values:
+            - data
+    poolAntiAffinity:
+      - enforcement: preferred
+        labelSelector:
+          matchExpressions:
+          - key: media_type
+            operator: NotIn
+            values:
+            - "SSD"
