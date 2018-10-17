@@ -1,7 +1,7 @@
-apiVersion: stork.libopenstorage.org/v1alpha1
+apiVersion: libopenstorage.org/v1alpha1
 kind: VolumePlacementStrategy
 metadata:
-  name: us-east-1a-zone-affinity
+  name: rack-1-2-3-affinity
 spec:
   affinity:
     nodeAffinity:
@@ -12,3 +12,5 @@ spec:
             operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
             values:
             - "rack-1"
+            - "rack-2"
+            - "rack-3"

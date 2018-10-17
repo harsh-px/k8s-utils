@@ -1,4 +1,4 @@
-apiVersion: stork.libopenstorage.org/v1alpha1
+apiVersion: libopenstorage.org/v1alpha1
 kind: VolumePlacementStrategy
 metadata:
   name: anti-sata-pool-placement
