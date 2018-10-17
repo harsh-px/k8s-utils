@@ -5,7 +5,7 @@ metadata:
 spec:
   affinity:
     poolAffinity:
-      - replicaPlacementAlgorithm: "spread" # Useful when multiple pools match the selector. Can be spread, binpack, random.
+      - replicaPlacementAlgorithm: "spread" # Useful when multiple pools match the selector. Can be spread, binpack, auto, random.
         labelSelector:
           matchExpressions:
           - key: media_type
