@@ -1,0 +1,26 @@
+apiVersion: libopenstorage.org/v1alpha1
+kind: VolumePlacementStrategy
+metadata:
+  name: ssd-sata-pool-placement-explicit
+spec:
+  replicaPlacements:
+    ##### First replica
+    - enforcement: required
+      labelSelector:
+        matchExpressions:
+        - key: media_type
+          operator: In             # NotIn, Exists, DoesNotExist, Gt, Lt
+          values:
+          - "SATA"
+    ##### Second replica
+    - enforcement: required
+      labelSelector:
+        matchExpressions:
+        - key: media_type
+          operator: In             # NotIn, Exists, DoesNotExist, Gt, Lt
+          values:
+          - "SSD"
+
+##### Optional fields not included above that have default values
+      # enforcement: required
+      # weight: 100
