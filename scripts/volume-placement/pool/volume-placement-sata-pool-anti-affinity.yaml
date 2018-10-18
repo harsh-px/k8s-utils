@@ -1,15 +1,15 @@
 apiVersion: libopenstorage.org/v1alpha1
 kind: VolumePlacementStrategy
 metadata:
-  name: anti-sata-pool-placement
+  name: anti-ssd-pool-placement
 spec:
-  affinity:
-    poolAntiAffinity:
-      - enforcement: preferred    # Can be "preferred" or "required" (default)
-        weight: 100               # OPTIONAL
-        labelSelector:
-          matchExpressions:
-          - key: media_type
-            operator: In
-            values:
-            - "SATA"
+  rules:
+    - affinity:
+        poolAntiAffinity:
+          enforcement: required
+          labelSelector:
+            matchExpressions:
+            - key: media_type
+              operator: In
+              values:
+              - "SSD"

@@ -3,12 +3,13 @@ kind: VolumePlacementStrategy
 metadata:
   name: cassandra-volume-anti-affinity
 spec:
-  affinity:
-    volumeAntiAffinity:
-      - enforcement: required             # Can be "preferred" or "required" (default)
-        labelSelector:
-          matchExpressions:
-          - key: app
-            operator: In
-            values:
-            - cassandra
+  rules:
+    - affinity:
+        volumeAffinity:
+          enforcement: preferred 
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In      
+              values:
+              - cassandra

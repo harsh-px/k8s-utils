@@ -3,12 +3,13 @@ kind: VolumePlacementStrategy
 metadata:
   name: postgres-volume-affinity
 spec:
-  affinity:
-    volumeAffinity:
-      - enforcement: required   # Can be "preferred" or "required" (default)
-        labelSelector:
-          matchExpressions:
-          - key: app
-            operator: In        # NotIn, Exists, DoesNotExist, Gt, Lt
-            values:
-            - postgres
+  rules:
+    - affinity:
+        volumeAffinity:
+          enforcement: preferred 
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In      
+              values:
+              - postgres

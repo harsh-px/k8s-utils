@@ -3,14 +3,15 @@ kind: VolumePlacementStrategy
 metadata:
   name: rack-1-2-3-affinity
 spec:
-  affinity:
-    nodeAffinity:
-      - enforcement: required                              # Can be "preferred" or "required" (default)
-        labelSelector: 
-          matchExpressions:
-          - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
-            operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
-            values:
-            - "rack-1"
-            - "rack-2"
-            - "rack-3"
+  rules:
+    - affinity:
+        nodeAffinity:
+          enforcement: required                              # Can be "preferred" or "required" (default)
+          labelSelector: 
+            matchExpressions:
+            - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
+              operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
+              values:
+              - "rack-1"
+              - "rack-2"
+              - "rack-3"

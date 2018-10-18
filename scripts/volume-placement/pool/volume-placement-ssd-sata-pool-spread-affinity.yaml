@@ -1,19 +1,26 @@
 apiVersion: libopenstorage.org/v1alpha1
 kind: VolumePlacementStrategy
 metadata:
-  name: ssd-sata-pool-spread-placement
+  name: ssd-sata-pool-placement-spread
 spec:
-  affinity:
-    poolAffinity:
-      - replicaPlacementAlgorithm: "spread" # Useful when multiple pools match the selector. Can be spread, binpack, auto, random.
-        labelSelector:
-          matchExpressions:
-          - key: media_type
-            operator: In             # NotIn, Exists, DoesNotExist, Gt, Lt
-            values:
-            - "SSD"
-            - "SATA"
-
-##### Optional fields not included above that have default values
-      # enforcement: required
-      # weight: 100
+  rules:
+    - affectedReplicas: 1
+      affinity:
+        poolAffinity:
+          enforcement: required
+          labelSelector:
+            matchExpressions:
+            - key: media_type
+              operator: In
+              values:
+              - "SSD"
+    - affectedReplicas: 1
+      affinity:
+        poolAffinity:
+          enforcement: required
+          labelSelector:
+            matchExpressions:
+            - key: media_type
+              operator: In
+              values:
+              - "SATA"

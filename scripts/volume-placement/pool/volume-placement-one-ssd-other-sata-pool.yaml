@@ -1,23 +1,25 @@
 apiVersion: libopenstorage.org/v1alpha1
 kind: VolumePlacementStrategy
 metadata:
-  name: ssd-pool-placement
+  name: one-ssd-other-sata-pool-placement
 spec:
   rules:
-    - affinity:
-        volumeAntiAffinity:
+    - affectedReplicas: 1
+      affinity:
+        poolAffinity:
           enforcement: required
           labelSelector:
             matchExpressions:
-            - key: type
-              operator: NotIn
+            - key: media_type
+              operator: In
               values:
-              - log
+              - "SSD"
+    - affinity:
         poolAffinity:
-          enforcement: required      # Can be "preferred" or "required" (default)
+          enforcement: required
           labelSelector:
             matchExpressions:
             - key: media_type
-              operator: In           # NotIn, Exists, DoesNotExist, Gt, Lt
+              operator: In
               values:
-              - "SSD"
+              - "SATA"

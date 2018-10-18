@@ -3,22 +3,24 @@ kind: VolumePlacementStrategy
 metadata:
   name: volume-db-nodes-or-postgres-affinity
 spec:
-  affinity:
-    nodeAffinity:
-      - enforcement: preferred
+  rules:
+    - affinity:
         weight: 200
-        labelSelector: 
-          matchExpressions:
-          - key: node_type 
-            operator: In
-            values:
-            - db_hardware
-    volumeAffinity:
-      - enforcement: preferred 
+        nodeAffinity:
+          enforcement: preferred
+          labelSelector: 
+            matchExpressions:
+            - key: node_type 
+              operator: In
+              values:
+              - db_hardware
+    - affinity:
         weight: 100
-        labelSelector:
-          matchExpressions:
-          - key: app
-            operator: In      
-            values:
-            - postgres
+        volumeAffinity:
+          enforcement: preferred 
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In      
+              values:
+              - postgres
