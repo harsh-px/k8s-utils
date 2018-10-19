@@ -4,20 +4,16 @@ metadata:
   name: ssd-pool-placement
 spec:
   rules:
-    - affinity:
-        volumeAntiAffinity:
-          enforcement: required
-          labelSelector:
-            matchExpressions:
-            - key: type
-              operator: NotIn
-              values:
-              - log
-        poolAffinity:
-          enforcement: required      # Can be "preferred" or "required" (default)
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: In           # NotIn, Exists, DoesNotExist, Gt, Lt
-              values:
-              - "SSD"
+    - enforcement: required
+      antiAffinity:
+        matchExpressions:
+        - key: type
+          operator: NotIn
+          values:
+          - log
+      affinity:
+        matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SSD"

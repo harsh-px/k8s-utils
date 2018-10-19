@@ -5,22 +5,18 @@ metadata:
 spec:
   rules:
     - affectedReplicas: 1
+      enforcement: required
       affinity:
-        poolAffinity:
-          enforcement: required
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: In
-              values:
-              - "SSD"
+        matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SSD"
     - affectedReplicas: 1
-      affinity:
-        poolAffinity:
-          enforcement: required
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: In
-              values:
-              - "SATA"
+      enforcement: required
+      affinity:    
+        matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SATA"

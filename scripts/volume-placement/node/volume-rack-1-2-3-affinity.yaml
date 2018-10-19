@@ -5,13 +5,10 @@ metadata:
 spec:
   rules:
     - affinity:
-        nodeAffinity:
-          enforcement: required                              # Can be "preferred" or "required" (default)
-          labelSelector: 
-            matchExpressions:
-            - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
-              operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
-              values:
-              - "rack-1"
-              - "rack-2"
-              - "rack-3"
+        matchExpressions:
+          - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
+            operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
+            values:
+            - "rack-1"
+            - "rack-2"
+            - "rack-3"

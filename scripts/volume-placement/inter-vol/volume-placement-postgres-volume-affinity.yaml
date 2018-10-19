@@ -5,11 +5,8 @@ metadata:
 spec:
   rules:
     - affinity:
-        volumeAffinity:
-          enforcement: preferred 
-          labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In      
-              values:
-              - postgres
+        matchExpressions:
+          - key: app 
+            operator: In
+            values:
+            - postgres

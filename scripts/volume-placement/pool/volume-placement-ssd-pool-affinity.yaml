@@ -5,11 +5,8 @@ metadata:
 spec:
   rules:
     - affinity:
-        poolAffinity:
-          enforcement: required
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: In
-              values:
-              - "SSD"
+        matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SSD"

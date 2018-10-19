@@ -4,23 +4,19 @@ metadata:
   name: volume-db-nodes-or-postgres-affinity
 spec:
   rules:
-    - affinity:
-        weight: 200
-        nodeAffinity:
-          enforcement: preferred
-          labelSelector: 
-            matchExpressions:
-            - key: node_type 
-              operator: In
-              values:
-              - db_hardware
-    - affinity:
-        weight: 100
-        volumeAffinity:
-          enforcement: preferred 
-          labelSelector:
-            matchExpressions:
-            - key: app
-              operator: In      
-              values:
-              - postgres
+    - weight: 200
+      enforcement: preferred
+      affinity:
+        matchExpressions:
+          - key: node_type 
+            operator: In
+            values:
+            - db_hardware
+    - weight: 100
+      enforcement: preferred
+      affinity:
+        matchExpressions:
+          - key: app
+            operator: In      
+            values:
+            - postgres

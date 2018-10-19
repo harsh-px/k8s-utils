@@ -4,28 +4,23 @@ metadata:
   name: data-collocate-with-log-placement
 spec:
   rules:
-    - affinity:
-        volumeAffinity:
-          enforcement: required
-          labelSelector:
-            matchExpressions:
-            - key: type
-              operator: In
-              values:
-              - log
-        volumeAntiAffinity:
-          enforcement: required
-          labelSelector:
-            matchExpressions:
-            - key: type
-              operator: In
-              values:
-              - data
-        poolAntiAffinity:
-          enforcement: preferred
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: NotIn
-              values:
-              - "SSD"
+    - enforcement: required
+      affinity:
+        matchExpressions:
+        - key: type
+          operator: In
+          values:
+          - log
+      antiAffinity:
+        matchExpressions:
+        - key: type
+          operator: In
+          values:
+          - data
+    - enforcement: preferred
+      antiAffinity:
+        matchExpressions:
+        - key: media_type
+          operator: NotIn
+          values:
+          - "SSD"
