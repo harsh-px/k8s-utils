@@ -5,15 +5,15 @@ metadata:
 spec:
   rules:
     - enforcement: required
-      antiAffinity:
-        matchExpressions:
-        - key: type
-          operator: NotIn
-          values:
-          - log
       affinity:
         matchExpressions:
         - key: media_type
           operator: In
           values:
           - "SSD"
+      antiAffinity:
+        matchExpressions:
+        - key: type
+          operator: In
+          values:
+          - log
