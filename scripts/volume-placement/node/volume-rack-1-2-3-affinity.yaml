@@ -4,11 +4,12 @@ metadata:
   name: rack-1-2-3-affinity
 spec:
   rules:
-    - affinity:
-        matchExpressions:
-          - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
-            operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
-            values:
-            - "rack-1"
-            - "rack-2"
-            - "rack-3"
+    - enforcement: required
+      type: affinity
+      matchExpressions:
+        - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
+          operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
+          values:
+          - "rack-1"
+          - "rack-2"
+          - "rack-3"

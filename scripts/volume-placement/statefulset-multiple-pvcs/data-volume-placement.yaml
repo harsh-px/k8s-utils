@@ -5,21 +5,19 @@ metadata:
 spec:
   rules:
     - enforcement: required
-      affinity:
-        matchExpressions:
+      type: affinity
+      matchExpressions:
         - key: type
           operator: In
           values:
           - log
-      antiAffinity:
-        matchExpressions:
         - key: type
-          operator: In
+          operator: NotIn
           values:
           - data
     - enforcement: preferred
-      antiAffinity:
-        matchExpressions:
+      type: antiAffinity
+      matchExpressions:
         - key: media_type
           operator: NotIn
           values:
