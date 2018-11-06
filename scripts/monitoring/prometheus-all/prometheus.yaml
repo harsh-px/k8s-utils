@@ -121,8 +121,6 @@ spec:
   endpoints:
     - port: px-api
       targetPort: 9001
-    - port: px-kvdb
-      targetPort: 9019
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -172,11 +170,11 @@ spec:
   replicas: 2
   logLevel: debug
   serviceAccountName: prometheus
-#  alerting:
-#    alertmanagers:
-#      - namespace: kube-system
-#        name: alertmanager-portworx
-#        port: web
+  alerting:
+    alertmanagers:
+      - namespace: kube-system
+        name: alertmanager-portworx
+        port: web
   serviceMonitorSelector:
     matchLabels:
       name: portworx-prometheus-sm
