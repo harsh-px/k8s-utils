@@ -4,11 +4,12 @@ metadata:
   name: volume-infra-node-affinity
 spec:
   rules:
-    - affinity:
-        matchExpressions:
-          - key: "kubernetes.io/hostname"  # Can be any label on the k8s node
-            operator: In                   # NotIn, Exists, DoesNotExist, Gt, Lt
-            values:
-            - "infra-01"
-            - "infra-02"
-            - "infra-03"
+    - enforcement: required
+      type: affinity
+      matchExpressions:
+        - key: "kubernetes.io/hostname"  # Can be any label on the k8s node
+          operator: In                   # NotIn, Exists, DoesNotExist, Gt, Lt
+          values:
+          - "infra-01"
+          - "infra-02"
+          - "infra-03"

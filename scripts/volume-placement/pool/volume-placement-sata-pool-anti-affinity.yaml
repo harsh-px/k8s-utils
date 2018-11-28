@@ -4,9 +4,9 @@ metadata:
   name: anti-ssd-pool-placement
 spec:
   rules:
-    - antiAffinity:
-        matchExpressions:
-        - key: media_type
-          operator: In
-          values:
-          - "SATA"
+    - type: antiAffinity
+      matchExpressions:
+      - key: media_type
+        operator: In
+        values:
+        - "SATA"

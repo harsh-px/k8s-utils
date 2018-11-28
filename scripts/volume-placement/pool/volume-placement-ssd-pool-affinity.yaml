@@ -4,9 +4,9 @@ metadata:
   name: ssd-pool-placement
 spec:
   rules:
-    - affinity:
-        matchExpressions:
-        - key: media_type
-          operator: In
-          values:
-          - "SSD"
+    - type: affinity
+      matchExpressions:
+      - key: media_type
+        operator: In
+        values:
+        - "SSD"

@@ -4,9 +4,9 @@ metadata:
   name: cassandra-volume-anti-affinity
 spec:
   rules:
-    - antiAffinity:
-        matchExpressions:
-          - key: app 
-            operator: In
-            values:
-            - cassandra
+    - type: antiAffinity
+      matchExpressions:
+        - key: app 
+          operator: In
+          values:
+          - cassandra

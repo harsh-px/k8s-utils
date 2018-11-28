@@ -4,9 +4,9 @@ metadata:
   name: postgres-volume-affinity
 spec:
   rules:
-    - affinity:
-        matchExpressions:
-          - key: app 
-            operator: In
-            values:
-            - postgres
+    - type: affinity
+      matchExpressions:
+        - key: app 
+          operator: In
+          values:
+          - postgres
