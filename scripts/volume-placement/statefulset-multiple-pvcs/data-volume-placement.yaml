@@ -1,11 +1,11 @@
-apiVersion: libopenstorage.org/v1alpha1
+apiVersion: portworx.io/v1beta1
 kind: VolumePlacementStrategy
 metadata:
   name: data-collocate-with-log-placement
 spec:
   rules:
-    - enforcement: required
-      type: affinity
+    - type: affinity
+      enforcement: required
       matchExpressions:
         - key: type
           operator: In
@@ -15,8 +15,8 @@ spec:
           operator: NotIn
           values:
           - data
-    - enforcement: preferred
-      type: antiAffinity
+    - type: antiAffinity
+      enforcement: preferred
       matchExpressions:
         - key: media_type
           operator: NotIn
