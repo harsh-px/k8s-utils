@@ -1,0 +1,36 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: volume-upgrade-tier
+  namespace: postgres
+spec:
+  enforcement: required
+  weight: 100
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io.object/volume
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - postgres
+  ##### conditions are the symptoms to evaluate
+  conditions:
+    - key: openstorage.io.condition.volume/latency_ms
+      operator: gt
+      values:
+        - 15
+    - key: openstorage.io.condition.disk/latency_ms
+      operator: gt
+      values:
+        - 30
+  ##### actions is the action to perform when all conditions are met
+  action:
+    name: openstorage.io.action.volume/move
+    actionObject:
+      type: openstorage.io.object/storagepool
+      matchExpressions:
+        - key: openstorage.io.condition.storagepool/latency_ms
+          operator: lt
+          values:
+          - 15

@@ -1,0 +1,24 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: postgres-node-rebalance
+  namespace: kube-system
+spec:
+  enforcement: required
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io.object/volume
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - postgres
+  ##### conditions are the symptoms to evaluate
+  conditions:
+    - name: openstorage.io/condition.volume.latency_ms
+      operator: gt
+      values:
+        - 15
+  ##### action is the action to perform when condition is true.
+  action:
+    name: openstorage.io.action.node/rebalance

@@ -1,0 +1,29 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: node-high-memory-drain-postgres-volume
+spec:
+  enforcement: preferred
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io/object.node
+    matchExpressions:
+      - key: node-role.kubernetes.io/master
+        operator: DoesNotExist
+  ##### condition is the symptom to evaluate
+  conditions:
+    - key: openstorage.io/condition.node.memory_usage_percentage
+      operator: gt
+      values:
+        - 80
+  ##### action is the action to perform when condition is true
+  action:
+    name: openstorage.io/action.volume.drain
+    ##### actionObject is the entity on which to perform the actions
+    actionObject:
+      type: openstorage.io/object.volume
+      matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - postgres

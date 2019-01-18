@@ -1,0 +1,22 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: node-down-policy
+spec:
+  enforcement: preferred
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io/object.node
+    matchExpressions:
+      - key: node-role.kubernetes.io/master
+        operator: DoesNotExist
+  ##### condition is the symptom to evaluate
+  conditions:
+    key: openstorage.io/condition.node.status
+    operator: eq
+    values:
+      - DOWN
+    duration: 120s
+  ##### action is the action to perform when condition is true
+  action:
+    name: openstorage.io/action.node.delete

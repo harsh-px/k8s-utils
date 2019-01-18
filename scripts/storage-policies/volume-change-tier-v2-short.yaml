@@ -1,0 +1,23 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: volume-change-tier
+spec:
+  enforcement: required
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io.object/pvc
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - postgres
+  ##### conditions are the symptoms to evaluate
+  conditions:
+    - conditionName: volume-latency-high
+    - conditionName: disk-latency-high
+  ##### actions are the action to perform when condition is true. There can be multiple actions. They are executed if the pre-condition for that action is met.
+  actions:
+    - actionName: move-volume-if-disk-latency-high
+    - actionName: rebalance-node-if-volume-count-high
+    - actionName: drain-volume-if-node-high-memory-usage

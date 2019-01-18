@@ -1,0 +1,28 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: volume-downgrade-tier
+spec:
+  enforcement: required
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io/object.volume
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - postgres
+  ##### condition is the symptom to evaluate
+  conditions:
+    - key: openstorage.io/condition.volume.last_access_time
+      operator: gt
+      values:
+        - 15d
+  ##### action is the action to perform when condition is true
+  action:
+    name: openstorage.io/action.volume.move
+    params:
+      - --from
+      - openstorage.io/tier.high
+      - --to
+      - openstorage.io/tier.low

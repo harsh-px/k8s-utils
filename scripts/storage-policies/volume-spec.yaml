@@ -1,0 +1,21 @@
+apiVersion: openstorage.io/v1beta1
+kind: VolumeSpec
+metadata:
+  name: postgres-data-01
+  labels:
+    app: postgres
+spec:
+  size: 4Gi
+  tier: openstorage.io/tier.low
+  profile: openstorage.io/profile.db
+  replicas: 2
+  nodes: node1,node2,node3
+status:
+  size: 4Gi
+  tier: openstorage.io/tier.high
+  profile: openstorage.io/profile.db
+  replicas: 2
+  events:
+    - "Dec 17 15:27 Capacity resize from 2Gi to 4Gi started"
+    - "Dec 17 15:28 Capacity resize from 2Gi to 4Gi completed successfully"
+    - "Dec 18 19:30 Tier reduce from high to low started"

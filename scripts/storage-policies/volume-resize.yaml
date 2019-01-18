@@ -1,0 +1,30 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: volume-resize
+spec:
+  enforcement: required
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io/object.volume
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+        - postgres
+  ##### condition is the symptom to evaluate
+  conditions:
+    - name: openstorage.io/condition.volume.usage_percentage
+      operator: gt
+      values:
+        - 80
+    - name: openstorage.io.condition.volume/capacity_gb
+      operator: lt
+      values:
+        - 2048
+  ##### action is the action to perform when condition is true
+  action:
+    name: openstorage.io/action.volume.resize
+    params:
+      - --scalefactor
+      - 1.2

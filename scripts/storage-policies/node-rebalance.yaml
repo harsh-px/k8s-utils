@@ -1,0 +1,22 @@
+apiVersion: openstorage.io/v1beta1
+kind: StoragePolicy
+metadata:
+  name: node-rebalance
+  namespace: kube-system
+spec:
+  enforcement: required
+  ##### object is the entity on which to check the conditions
+  object:
+    type: openstorage.io/object.node
+    matchExpressions:
+      - key: node-role.kubernetes.io/master
+        operator: DoesNotExist
+  ##### conditions are the symptoms to evaluate
+  conditions:
+    - key: openstorage.io/condition.node.volume_count
+      operator: gt
+      values:
+        - 100
+  ##### action is the action to perform when condition is true.
+  action:
+    name: openstorage.io/action.node.rebalance
