@@ -1,0 +1,93 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-class: portworx-repl2
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/portworx-volume
+    creationTimestamp: 2019-01-11T23:41:28Z
+    labels:
+      app: cassandra
+    name: cassandra-data-cassandra-0
+    namespace: default
+    resourceVersion: "17453575"
+    selfLink: /api/v1/namespaces/default/persistentvolumeclaims/cassandra-data-cassandra-0
+    uid: 6aa4581f-15fa-11e9-a9a4-080027ee1df7
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+    volumeName: pvc-6aa4581f-15fa-11e9-a9a4-080027ee1df7
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 2Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-class: portworx-repl2
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/portworx-volume
+    creationTimestamp: 2019-01-11T23:43:56Z
+    labels:
+      app: cassandra
+    name: cassandra-data-cassandra-1
+    namespace: default
+    resourceVersion: "17454108"
+    selfLink: /api/v1/namespaces/default/persistentvolumeclaims/cassandra-data-cassandra-1
+    uid: c30d05f4-15fa-11e9-a9a4-080027ee1df7
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+    volumeName: pvc-c30d05f4-15fa-11e9-a9a4-080027ee1df7
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 2Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-class: portworx-repl2
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/portworx-volume
+    creationTimestamp: 2019-01-11T23:46:09Z
+    labels:
+      app: cassandra
+    name: cassandra-data-cassandra-2
+    namespace: default
+    resourceVersion: "17454584"
+    selfLink: /api/v1/namespaces/default/persistentvolumeclaims/cassandra-data-cassandra-2
+    uid: 11f7bd8a-15fb-11e9-a9a4-080027ee1df7
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+    volumeName: pvc-11f7bd8a-15fb-11e9-a9a4-080027ee1df7
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 2Gi
+    phase: Bound
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""

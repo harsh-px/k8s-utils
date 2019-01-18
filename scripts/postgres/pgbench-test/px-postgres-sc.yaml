@@ -7,4 +7,3 @@ provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "3"
    io_profile: "db"
-   disable_io_profile_protection: "1"

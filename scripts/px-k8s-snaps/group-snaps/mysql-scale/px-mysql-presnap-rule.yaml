@@ -1,0 +1,13 @@
+apiVersion: stork.libopenstorage.org/v1alpha1
+kind: Rule
+metadata:
+  name: px-mysql-presnap-rule
+spec:
+- actions:
+  - type: command
+    value: echo "=======================================Starting Snap=============================================="
+  - type: command
+    value: mysql --user=root --password=password -Bse 'flush tables with read lock;system
+      ;'
+  podSelector:
+    app: mysql
