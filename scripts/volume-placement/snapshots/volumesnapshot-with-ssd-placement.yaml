@@ -4,6 +4,6 @@ metadata:
   name: mysql-snapshot
   namespace: default
   annotations:
-    libopenstorage/placement: "ssd-pool-placement"
+    portworx.io/placement_strategy: "ssd-pool-placement"
 spec:
   persistentVolumeClaimName: mysql-data

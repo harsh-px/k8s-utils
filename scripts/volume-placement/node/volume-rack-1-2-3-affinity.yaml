@@ -7,8 +7,8 @@ spec:
     - enforcement: required
       type: affinity
       matchExpressions:
-        - key: "failure-domain.portworx/rack"  # Can be any label on the k8s node
-          operator: In                         # NotIn, Exists, DoesNotExist, Gt, Lt
+        - key: "failure-domain.beta.kubernetes.io/rack"  # Can be any label on the k8s node
+          operator: In                                   # NotIn, Exists, DoesNotExist, Gt, Lt
           values:
           - "rack-1"
           - "rack-2"

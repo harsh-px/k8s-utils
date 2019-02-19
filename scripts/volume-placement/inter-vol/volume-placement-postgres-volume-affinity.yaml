@@ -1,4 +1,4 @@
-apiVersion: libopenstorage.org/v1alpha1
+apiVersion: portworx.io/v1beta1
 kind: VolumePlacementStrategy
 metadata:
   name: postgres-volume-affinity
