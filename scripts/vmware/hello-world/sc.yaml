@@ -1,0 +1,9 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: vmware-sc
+provisioner: kubernetes.io/vsphere-volume
+parameters:
+  datastore: px-shared-datastore-01
+  diskformat: thin
+  fstype: ext4

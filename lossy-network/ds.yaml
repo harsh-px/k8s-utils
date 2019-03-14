@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: network-sim
+  namespace: kube-system
+spec:
+  minReadySeconds: 0
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        name: network-sim
+    spec:
+      hostNetwork: true
+      hostPID: false
+      containers:
+        - name: network-sim
+          image: harshpx/network-sim:latest
+          imagePullPolicy: Always
+          command:
+            ["comcast",
+            "--device=eth1",
+            "--latency=250",
+            "--target-bw=1000",
+            "--packet-loss=10%"]
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: diagsdump
+              mountPath: /var/cores
+      restartPolicy: Always
+      volumes:
+        - name: diagsdump
+          hostPath:
+            path: /var/cores
