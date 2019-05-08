@@ -6,7 +6,7 @@ spec:
   rules:
     - type: antiAffinity
       matchExpressions:
-        - key: app 
+        - key: domain 
           operator: In
           values:
-          - cassandra
+          - green

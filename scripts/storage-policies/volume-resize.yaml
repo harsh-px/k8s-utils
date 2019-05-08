@@ -6,7 +6,6 @@ spec:
   enforcement: required
   ##### object is the entity on which to check the conditions
   object:
-    type: openstorage.io/object.volume
     matchExpressions:
       - key: app
         operator: In
@@ -26,5 +25,4 @@ spec:
   action:
     name: openstorage.io/action.volume.resize
     params:
-      - --scalefactor
-      - 1.2
+      scalefactor: 1.2

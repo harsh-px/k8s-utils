@@ -4,9 +4,8 @@ metadata:
   name: volume-upgrade-tier
   namespace: postgres
 spec:
-  ##### object is the entity on which to check the conditions
-  object:
-    type: openstorage.io.object/volume
+  ##### selector allows providing label selectors to filter down the objects that are applicable to this policy 
+  selector:
     matchLabels:
       app: postgres
   ##### conditions are the symptoms to evaluate
