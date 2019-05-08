@@ -1,0 +1,8 @@
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+    name: cassandra-log-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+   placement_strategy: "collocate-with-log-placement"

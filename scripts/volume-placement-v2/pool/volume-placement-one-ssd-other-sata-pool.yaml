@@ -1,0 +1,21 @@
+apiVersion: portworx.io/v1beta1
+kind: VolumePlacementStrategy
+metadata:
+  name: one-ssd-other-sata-pool-placement
+spec:
+  rules:
+    - affectedReplicas: 1
+      enforcement: required
+      type: affinity
+      matchExpressions:
+      - key: media_type
+        operator: In
+        values:
+        - "SSD"
+    - enforcement: required
+      type: affinity
+      matchExpressions:
+      - key: media_type
+        operator: In
+        values:
+        - "SATA"

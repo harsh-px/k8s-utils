@@ -1,0 +1,17 @@
+apiVersion: portworx.io/v1beta1
+kind: VolumePlacementStrategy
+metadata:
+  name: rack-1-2-3-affinity
+spec:
+  rules:
+    - enforcement: required
+      affinity:
+        replicaAffinity:
+          labelSelector:
+            matchExpressions:
+              - key: "failure-domain.beta.kubernetes.io/rack"  # Can be any label on the k8s node
+                operator: In                                   # NotIn, Exists, DoesNotExist, Gt, Lt
+                values:
+                - "rack-1"
+                - "rack-2"
+                - "rack-3"

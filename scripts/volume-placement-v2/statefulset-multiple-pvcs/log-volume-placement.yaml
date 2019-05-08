@@ -1,0 +1,24 @@
+apiVersion: portworx.io/v1beta1
+kind: VolumePlacementStrategy
+metadata:
+  name: log-volume-placement
+spec:
+  rules:
+    - enforcement: required
+      affinity:
+        replicaAffinity:
+          labelSelector:
+            matchExpressions:
+            - key: media_type
+              operator: In
+              values:
+              - "SSD"
+    - enforcement: required
+      antiAffinity:
+        volumeAntiAffinity:
+          labelSelector:
+            matchExpressions:
+            - key: type
+              operator: In
+              values:
+              - log

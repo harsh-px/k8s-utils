@@ -1,0 +1,15 @@
+apiVersion: portworx.io/v1beta1
+kind: VolumePlacementStrategy
+metadata:
+  name: volume-infra-node-affinity
+spec:
+  rules:
+    - enforcement: required
+      affinity:
+        replicaAffinity:
+          labelSelector:
+            matchExpressions:
+              - key: "node-type"  # Can be any label on the k8s node
+                operator: In      # NotIn, Exists, DoesNotExist, Gt, Lt
+                values:
+                - "infra"

@@ -1,0 +1,14 @@
+apiVersion: portworx.io/v1beta2
+kind: VolumePlacementStrategy
+metadata:
+  name: postgres-volume-affinity
+spec:
+  rules:
+    - affinity:
+        volumeAffinity:
+          labelSelector:
+            matchExpressions:
+              - key: app 
+                operator: In
+                values:
+                - postgres

@@ -1,0 +1,9 @@
+apiVersion: volumesnapshot.external-storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: mysql-snapshot
+  namespace: default
+  annotations:
+    portworx.io/placement_strategy: "ssd-pool-placement"
+spec:
+  persistentVolumeClaimName: mysql-data

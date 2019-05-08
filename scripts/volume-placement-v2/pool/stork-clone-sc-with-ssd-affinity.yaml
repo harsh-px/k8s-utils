@@ -1,0 +1,7 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: stork-ssd-clone-sc
+provisioner: stork-snapshot
+parameters:
+   placement_strategy: "ssd-pool-placement"

@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: px-mysql-clone
+   annotations:
+    snapshot.alpha.kubernetes.io/snapshot: mysql-snapshot
+spec:
+   accessModes:
+     - ReadWriteOnce
+   storageClassName: stork-ssd-clone-sc
+   resources:
+     requests:
+       storage: 2Gi
