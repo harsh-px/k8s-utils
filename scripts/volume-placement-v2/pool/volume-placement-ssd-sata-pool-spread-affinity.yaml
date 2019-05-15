@@ -5,22 +5,18 @@ metadata:
 spec:
   rules:
     # first replica in SSD
-    - affinity:
-        replicaAffinity:
-          affectedReplicas: 1
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: In
-              values:
-              - "SSD"
+    - replicaAffinity:
+        affectedReplicas: 1
+        matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SSD"
     # second in SATA
-    - affinity:
-        replicaAffinity:
-          affectedReplicas: 1
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: In
-              values:
-              - "SATA"
+    - replicaAffinity:
+        affectedReplicas: 1
+        matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SATA"

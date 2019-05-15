@@ -1,0 +1,9 @@
+apiVersion: portworx.io/v1beta2
+kind: VolumePlacementStrategy
+metadata:
+  name: each-replica-in-different-zone
+spec:
+  rules:
+    - enforcement: required
+      replicaAntiAffinity:
+        topologyKey: failure-domain.kubernetes.io/zone

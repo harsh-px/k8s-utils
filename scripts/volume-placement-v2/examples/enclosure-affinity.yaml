@@ -5,41 +5,25 @@ metadata:
 spec:
   rules:
     - enforcement: required
-      affinity:
-        replicaAffinity:
-          topologyKey: failure-domain.kubernetes.io/rack
-          labelSelector:
-            matchExpressions:
-              - key: application 
-                operator: In
-                values:
-                  - "kafka"
-              - key: service
-                operator: In        
-                values:
-                  - "stability2"
-              - key: environment
-                operator: In
-                values:
-                  - "prod"
+      replicaAffinity:
+        topologyKey: failure-domain.kubernetes.io/rack
     - enforcement: required
-      antiAffinity:
-        volumeAntiAffinity:
-          topologyKey: failure-domain.kubernetes.io/rack
-          labelSelector:
-            matchExpressions:
-              - key: application 
-                operator: In
-                values:
-                  - "kafka"
-              - key: service
-                operator: In        
-                values:
-                  - "stability2"
-              - key: environment
-                operator: In
-                values:
-                  - "prod"
+      volumeAntiAffinity:
+        topologyKey: failure-domain.kubernetes.io/rack
+        labelSelector:
+          matchExpressions:
+            - key: application 
+              operator: In
+              values:
+                - "kafka"
+            - key: service
+              operator: In        
+              values:
+                - "stability2"
+            - key: environment
+              operator: In
+              values:
+                - "prod"
 
 ---
 
