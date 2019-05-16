@@ -1,11 +1,11 @@
-apiVersion: portworx.io/v1beta1
+apiVersion: portworx.io/v1beta2
 kind: VolumePlacementStrategy
 metadata:
   name: anti-ssd-pool-placement
 spec:
   rules:
-    - replicaAntiAffinity:
-        matchExpressions:
+    replicaAntiAffinity:
+     -  matchExpressions:
         - key: media_type
           operator: In
           values:
