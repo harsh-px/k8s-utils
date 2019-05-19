@@ -3,7 +3,6 @@ kind: VolumePlacementStrategy
 metadata:
   name: each-replica-in-different-zone
 spec:
-  rules:
+  replicaAntiAffinity:
     - enforcement: required
-      replicaAntiAffinity:
-        topologyKey: failure-domain.kubernetes.io/zone
+      topologyKey: failure-domain.kubernetes.io/zone

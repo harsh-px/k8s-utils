@@ -3,11 +3,10 @@ kind: VolumePlacementStrategy
 metadata:
   name: volume-infra-node-affinity
 spec:
-  rules:
-    replicaAffinity:
-    -  enforcement: required
-       matchExpressions:
-         - key: "node-type"  # Can be any label on the k8s node
-           operator: In      # NotIn, Exists, DoesNotExist, Gt, Lt
-           values:
-           - "infra"
+  replicaAffinity:
+    - enforcement: required
+      matchExpressions:
+        - key: "node-type"  # Can be any label on the k8s node
+          operator: In      # NotIn, Exists, DoesNotExist, Gt, Lt
+          values:
+          - "infra"

@@ -3,10 +3,9 @@ kind: VolumePlacementStrategy
 metadata:
   name: ssd-pool-placement
 spec:
-  rules:
-    replicaAffinity:
-    -  matchExpressions:
-        - key: media_type
-          operator: In
-          values:
-          - "SSD"
+  replicaAffinity:
+  -  matchExpressions:
+      - key: media_type
+        operator: In
+        values:
+        - "SSD"

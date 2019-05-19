@@ -3,16 +3,13 @@ kind: VolumePlacementStrategy
 metadata:
   name: cassandra-volume-anti-affinity
 spec:
-  rules:
-    - antiAffinity:
-        volumeAntiAffinity:
-          labelSelector:  
-            matchExpressions:
-              - key: app 
-                operator: In
-                values:
-                - cassandra
-              - key: clustername 
-                operator: In
-                values:
-                - cassandra-prod
+  volumeAntiAffinity:
+  - matchExpressions:
+      - key: app 
+        operator: In
+        values:
+        - cassandra
+      - key: clustername 
+        operator: In
+        values:
+        - cassandra-prod

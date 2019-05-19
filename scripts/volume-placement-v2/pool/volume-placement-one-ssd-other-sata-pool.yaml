@@ -3,19 +3,18 @@ kind: VolumePlacementStrategy
 metadata:
   name: one-ssd-other-sata-pool-placement
 spec:
-  rules:
-    # first replica in SSD
-    replicaAffinity:
-    -  affectedReplicas: 1
-       matchExpressions:
-         - key: media_type
-           operator: In
-           values:
-           - "SSD"
-    # second in SATA
-    replicaAffinity:
-    -  matchExpressions:
-         - key: media_type
-           operator: In
-           values:
-           - "SATA"
+  # first replica in SSD
+  replicaAffinity:
+  -  affectedReplicas: 1
+      matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SSD"
+  # second in SATA
+  replicaAffinity:
+  -  matchExpressions:
+        - key: media_type
+          operator: In
+          values:
+          - "SATA"

@@ -4,52 +4,22 @@ metadata:
   name: kafka-stability2-placement-rules
 spec:
   rules:
+    replicaAffinity:
     - enforcement: required
-      replicaAffinity:
-        topologyKey: failure-domain.kubernetes.io/rack
+      topologyKey: failure-domain.kubernetes.io/rack
+    volumeAntiAffinity:
     - enforcement: required
-      volumeAntiAffinity:
-        topologyKey: failure-domain.kubernetes.io/rack
-        labelSelector:
-          matchExpressions:
-            - key: application 
-              operator: In
-              values:
-                - "kafka"
-            - key: service
-              operator: In        
-              values:
-                - "stability2"
-            - key: environment
-              operator: In
-              values:
-                - "prod"
-
----
-
-
-apiVersion: portworx.io/v1beta2
-kind: VolumePlacementStrategy
-metadata:
-  name: one-ssd-rest-sata-placement-rule
-spec:
-  rules:
-    - enforcement: required
-      affinity:
-        replicaAffinity:
-          affectedReplicas: 1
-          labelSelector:
-            matchExpressions:
-              - key: media_type 
-                operator: In
-                values:
-                  - "SSD"
-    - enforcement: preferred
-      affinity:
-        replicaAffinity:
-          labelSelector:
-            matchExpressions:
-              - key: media_type 
-                operator: In
-                values:
-                  - "SATA"
+      topologyKey: failure-domain.kubernetes.io/rack
+      matchExpressions:
+        - key: application 
+          operator: In
+          values:
+            - "kafka"
+        - key: service
+          operator: In        
+          values:
+            - "stability2"
+        - key: environment
+          operator: In
+          values:
+            - "prod"

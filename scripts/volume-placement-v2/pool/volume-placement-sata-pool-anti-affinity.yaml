@@ -3,10 +3,9 @@ kind: VolumePlacementStrategy
 metadata:
   name: anti-ssd-pool-placement
 spec:
-  rules:
-    replicaAntiAffinity:
-     -  matchExpressions:
-        - key: media_type
-          operator: In
-          values:
-          - "SATA"
+  replicaAntiAffinity:
+    -  matchExpressions:
+      - key: media_type
+        operator: In
+        values:
+        - "SATA"
