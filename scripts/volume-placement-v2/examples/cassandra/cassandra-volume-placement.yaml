@@ -1,0 +1,16 @@
+apiVersion: portworx.io/v1beta2
+kind: VolumePlacementStrategy
+metadata:
+  name: cassandra-placement-rules
+spec:
+  replicaAffinity:
+    - enforcement: required
+      topologyKey: failure-domain.beta.kubernetes.io/zone
+  volumeAntiAffinity:
+    - enforcement: required
+      topologyKey: failure-domain.beta.kubernetes.io/zone
+      matchExpressions:
+        - key: app
+          operator: In
+          values:
+            - "cassandra"
