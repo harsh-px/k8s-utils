@@ -6,7 +6,6 @@ metadata:
 provisioner: kubernetes.io/portworx-volume
 parameters:
    repl: "2"
-   placement_strategy: cassandra-placement-rules
 ---
 apiVersion: v1
 kind: Service
@@ -109,6 +108,7 @@ spec:
         app: cassandra
       annotations:
         volume.beta.kubernetes.io/storage-class: portworx-repl2
+        placement_strategy: cassandra-placement-rules
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:

@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+   name: px-csi-pvc
+spec:
+   storageClassName: portworx-csi-sc
+   accessModes:
+     - ReadWriteOnce
+   resources:
+     requests:
+       storage: 2Gi
