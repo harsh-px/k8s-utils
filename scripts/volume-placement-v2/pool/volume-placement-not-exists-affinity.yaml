@@ -1,0 +1,12 @@
+apiVersion: portworx.io/v1beta2
+kind: VolumePlacementStrategy
+metadata:
+  name: nosuchthing-pool-placement
+spec:
+  replicaAffinity:
+  - enforcement:  preferred
+    matchExpressions:
+     - key: media_type
+       operator: In
+       values:
+       - "nosuchthing"

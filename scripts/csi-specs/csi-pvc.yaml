@@ -5,7 +5,7 @@ metadata:
 spec:
    storageClassName: portworx-csi-sc
    accessModes:
-     - ReadWriteOnce
+     - ReadWriteMany
    resources:
      requests:
        storage: 2Gi

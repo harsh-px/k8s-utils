@@ -1,26 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: hello-world-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: hello-world
   template:
     metadata:
       labels:
-        app: nginx
+        app: hello-world
     spec:
       containers:
-      - name: nginx
-        image: nginx
+      - name: hello-world
+        image: gourao/goubuntu:latest
+        command: [ "/bin/sh" ]
+        args: [ "-c", "while true; do echo hello; sleep 10;done" ]
         ports:
         - containerPort: 80
         volumeMounts:
-        - name: nginx-persistent-storage
-          mountPath: /usr/share/nginx/html
+        - name: hello-world-persistent-storage
+          mountPath: /mnt
       volumes:
-      - name: nginx-persistent-storage
+      - name: hello-world-persistent-storage
         persistentVolumeClaim:
           claimName: px-csi-pvc
