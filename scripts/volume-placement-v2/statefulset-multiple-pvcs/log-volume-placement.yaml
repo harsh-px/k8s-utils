@@ -3,22 +3,17 @@ kind: VolumePlacementStrategy
 metadata:
   name: log-volume-placement
 spec:
-  rules:
-    - enforcement: required
-      affinity:
-        replicaAffinity:
-          labelSelector:
-            matchExpressions:
-            - key: media_type
-              operator: In
-              values:
-              - "SSD"
-    - enforcement: required
-      antiAffinity:
-        volumeAntiAffinity:
-          labelSelector:
-            matchExpressions:
-            - key: type
-              operator: In
-              values:
-              - log
+  replicaAffinity:
+  - enforcement: required
+    matchExpressions:
+    - key: media_type
+      operator: In
+      values:
+      - "SSD"
+  volumeAntiAffinity:
+  - enforcement: required
+    matchExpressions:
+    - key: type
+      operator: In
+      values:
+      - log
