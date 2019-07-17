@@ -1,0 +1,28 @@
+apiVersion: autopilot.libopenstorage.org/v1alpha1
+kind: StoragePolicy
+metadata:
+ name: scale-cluster-storage
+spec:
+  enforcement: required
+  ##### conditions are the symptoms to evaluate. All conditions are AND'ed
+  conditions:
+    # cluster disk usage should be less than 70%
+    - key: "100 * (px_cluster_disk_utilized_bytes / px_cluster_disk_total_bytes)"
+      operator: Gt
+      values:
+        - "70"
+      # for is the time in seconds for which the condition must persist
+      for: "300"
+    # cluster capacity should not exceed 500GB
+    - key: "px_cluster_disk_total_bytes / 1000000000"
+      operator: Lt
+      values:
+       - "500"
+  ##### action to perform when conditions are met
+  action:
+    name: openstorage.io.action.cluster/scaleup_storage
+    # params are specific to each action and will be documented on the URL above
+    params:
+      scalefactor: "50%"
+      # strategy can be vertical, horizontal, verticalPreferred and horizontalPreferred
+      strategy: verticalPreferred

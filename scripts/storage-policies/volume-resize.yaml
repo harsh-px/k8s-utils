@@ -1,28 +1,32 @@
-apiVersion: openstorage.io/v1beta1
+apiVersion: autopilot.libopenstorage.org/v1alpha1
 kind: StoragePolicy
 metadata:
-  name: volume-resize
+ name: volume-resize
 spec:
   enforcement: required
-  ##### object is the entity on which to check the conditions
-  object:
-    matchExpressions:
-      - key: app
-        operator: In
-        values:
-        - postgres
-  ##### condition is the symptom to evaluate
+  ##### selector filters the objects affected by this rule given labels
+  selector:
+    matchLabels:
+      app: postgres
+  ##### namespaceSelector selects the namespaces of the objects affected by this rule
+  namespaceSelector:
+    matchLabels:
+      type: db
+  ##### conditions are the symptoms to evaluate. All conditions are AND'ed
   conditions:
-    - name: openstorage.io/condition.volume.usage_percentage
-      operator: gt
+    # volume usage should be less than 50%
+    - key: "100 * (px_volume_usage_bytes / px_volume_capacity_bytes)"
+      operator: Gt
       values:
-        - 80
-    - name: openstorage.io.condition.volume/capacity_gb
-      operator: lt
+        - "50"
+    # volume capacity should not exceed 40GB
+    - key: "px_volume_capacity_bytes / 1000000000"
+      operator: Lt
       values:
-        - 2048
-  ##### action is the action to perform when condition is true
+       - "40"
+  ##### action to perform when condition is true
   action:
-    name: openstorage.io/action.volume.resize
+    name: openstorage.io.action.volume/resize
+    # params are specific to each action and will be documented on the URL above
     params:
-      scalefactor: 1.2
+      scalefactor: "2.0"

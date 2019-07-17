@@ -1,0 +1,24 @@
+kind: StorageCluster
+metadata:
+ name: portworx-cluster
+ namespace: kube-system
+spec:
+  cloudStorage:
+    minSize: 100GB
+    maxSize: 2TB
+    deviceSpecs:
+    - type=gp2
+  image: portworx/oci-monitor:2.1.2
+      
+---
+apiVersion: portworx.io/v1alpha1
+kind: NodeOperation
+metadata:
+ name: add-drive
+ namespace: kube-system
+spec:
+  nodeName: worker1
+  operation: drive-add
+  params:
+    size: 100GB
+    type: px-ssd
