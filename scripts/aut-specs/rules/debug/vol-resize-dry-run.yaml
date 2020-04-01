@@ -1,0 +1,17 @@
+apiVersion: autopilot.libopenstorage.org/v1alpha1
+kind: AutopilotRule
+metadata:
+  name: pool-expand-dry-run
+spec:
+  enforcement: approvalRequired
+  conditions:
+    expressions:
+      - key: "px_pool_stats_total_bytes/(1024*1024*1024)"
+        operator: Lt
+        values:
+          - "400"
+  actions:
+    - name: "openstorage.io.action.storagepool/expand"
+      params:
+        scalepercentage: "100"
+        dry-run: "true"
