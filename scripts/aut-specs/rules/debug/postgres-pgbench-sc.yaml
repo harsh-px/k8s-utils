@@ -1,0 +1,9 @@
+##### Portworx storage class
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: postgres-pgbench-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+  repl: "2"
+allowVolumeExpansion: true

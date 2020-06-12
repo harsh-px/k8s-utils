@@ -3,8 +3,12 @@ kind: AutopilotRule
 metadata:
   name: pool-expand-dry-run
 spec:
+  selector:
+    matchLabels:
+      kubernetes.io/hostname: "70.0.101.16"
   enforcement: approvalRequired
   conditions:
+    for: 10
     expressions:
       - key: "px_pool_stats_total_bytes/(1024*1024*1024)"
         operator: Lt

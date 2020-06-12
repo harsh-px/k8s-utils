@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pgbench-data
+  labels:
+    app: postgres
+spec:
+  storageClassName: postgres-pgbench-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 30Gi
+---

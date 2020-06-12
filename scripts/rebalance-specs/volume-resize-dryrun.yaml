@@ -1,0 +1,25 @@
+apiVersion: autopilot.libopenstorage.org/v1alpha1
+kind: AutopilotRule
+metadata:
+  name: volume-resize
+spec:
+  enforcement: approvalRequired
+  actionsCoolDownPeriod: 7200
+  ##### selector filters the objects affected by this rule given labels
+  selector:
+    matchLabels:
+      app: postgres
+  ##### conditions are the symptoms to evaluate
+  conditions:
+    for: 10
+    expressions:
+    - key: "px_volume_capacity_bytes/(1024*1024*1024)"
+      operator: Lt
+      values:
+        - "42"
+  ##### action to perform when condition is true
+  actions:
+  - name: openstorage.io.action.volume/resize
+    params:
+      scalepercentage: "100"
+      dry-run: "true"
