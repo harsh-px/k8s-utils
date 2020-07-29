@@ -3,7 +3,7 @@ kind: AutopilotRule
 metadata:
  name: pool-rebalance
 spec:
-  enforcement: approvalRequired
+  #enforcement: approvalRequired
   conditions:
     requiredMatches: 1
     expressions:

@@ -3,7 +3,7 @@ kind: AutopilotRule
 metadata:
   name: volume-resize
 spec:
-  enforcement: approvalRequired
+  #enforcement: approvalRequired
   actionsCoolDownPeriod: 7200
   ##### selector filters the objects affected by this rule given labels
   selector:

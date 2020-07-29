@@ -6,5 +6,5 @@ metadata:
 provisioner: kubernetes.io/portworx-volume
 parameters:
   repl: "1"
-  nodes: "97f131dd-9e5b-431a-96f9-1c9a9c301478"
+  nodes: "f4587f8c-8df0-4cb1-9740-5431da0e8b0a"
 allowVolumeExpansion: true
