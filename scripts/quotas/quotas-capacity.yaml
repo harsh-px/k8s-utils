@@ -1,0 +1,76 @@
+
+1. Limits (Quotas)
+2. Requests/Reservations
+
+---
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: limit-tier-one-storage
+  namespace: tier-one-users
+spec:
+  hard:
+    # Across all persistent volume claims, the sum of storage requests cannot exceed this value. Logical.
+    requests.storage: "100Gi"
+    limits.storage: "1Ti"
+    # Across all persistent volume claims associated with the storage-class-name, the sum of storage requests cannot exceed this value.
+    <storage-class-name>.storageclass.storage.k8s.io/requests.storage: "20Gi"
+    # For volumes in the tier-one-users namespace, limit served IOPS to 10K
+    requests.portworx.io/iops: "40K"
+    portworx.io/iops: "40K"
+    # only allow access to 4 NVIDIA GPUs in this namespace
+    requests.nvidia.com/gpu: 4
+#  scopeSelector:
+#    matchExpressions:
+#      - scopeName: PriorityClass
+#        operator : In
+#        values: ["low"]
+---
+
+apiVersion: portworx.io/v1alpha1
+kind: ResourceReservation
+metadata:
+  name: reserve-tier-one-storage
+  namespace: tier-one-users
+spec:
+  hard:
+    # Across all persistent volume claims, reserve 40Gi for PVs from this namespace
+    requests.storage: "40Gi"
+    # Reserve 10Gi for volumes coming from the <storage-class-name>
+    <storage-class-name>.storageclass.storage.k8s.io/requests.storage: "10Gi"
+    # For volumes in the tier-one-users namespace, reserve 2K IOPS
+    # REMOVE: portworx.io/iops: "2K"
+
+---
+
+### Pods
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: high-priority
+  namespace: tier-one-users
+spec:
+  containers:
+    - name: high-priority
+      image: ubuntu
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo hello; sleep 10;done"]
+      resources:
+        requests:
+          memory: "10Gi"
+          cpu: "500m"
+          portworx.io/iops: "2K"
+        limits:
+          memory: "10Gi"
+          cpu: "500m"
+        priorityClassName: "high"
+  volumes:
+      PVC => 10Gi
+
+## Priority classes
+
+1. Inherit default if not specified
+2.
+

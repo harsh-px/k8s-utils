@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subpath-deployment
+spec:
+  selector:
+    matchLabels:
+      app: curl
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: curl
+    spec:
+      containers:
+      - name: curl
+        image: gourao/goubuntu:latest
+        command: [ "/bin/sh" ]
+        args: [ "-c", "while true; do echo hello; sleep 2;done" ]
+        volumeMounts:
+        - name: persistent-storage
+          mountPath: /data-a
+          subPath: a
+        - name: persistent-storage
+          mountPath: /data-ab
+          subPath: a/b
+        - name: persistent-storage
+          mountPath: /data-c
+          subPath: c
+      volumes:
+      - name: persistent-storage
+        persistentVolumeClaim:
+          claimName: debug-pvc
