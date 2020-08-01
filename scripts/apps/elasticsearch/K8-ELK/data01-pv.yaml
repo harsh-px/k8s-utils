@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: data01
+  labels:
+    type: local
+spec:
+  storageClassName: data01sc
+  capacity:
+    storage: 94Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/elkvol"

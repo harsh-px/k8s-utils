@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: evol03
+spec:
+  storageClassName: evol03sc
+  capacity:
+    storage: 94Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  portworxVolume:
+    volumeID: "evol03"
+    fsType:   "ext4"

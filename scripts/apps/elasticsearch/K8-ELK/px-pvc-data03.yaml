@@ -1,0 +1,11 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pvc-evol03
+spec:
+  storageClassName: evol03sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 94Gi
