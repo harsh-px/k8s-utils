@@ -1,0 +1,246 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccm-config
+  namespace: kube-system
+data:
+  ccm.properties: |-
+    {
+      "product_name": "px",
+       "features": {
+         "env_info": "file",
+         "cert_store": "file",
+         "appliance_info": "config",
+         "scheduled_log_uploader":"disabled",
+         "config_reload": "file",
+         "upload": "enabled"
+       },
+      "cert": {
+        "check_interval_in_seconds": 30,
+        "key_algorithm": "RSA",
+        "key_size": 2048,
+        "sign_algorithm": "SHA1WithRSA",
+        "release": {
+          "production": {
+            "cert": "/etc/pwx/cert/rel_cert.pem",
+            "private": "/etc/pwx/cert/rel_priv.pem"
+          },
+          "staging": {
+            "cert": "/etc/pwx/cert/rel_cert_staging.pem",
+            "private": "/etc/pwx/cert/rel_priv_staging.pem"
+          }
+        },
+        "appliance": {
+         "current_cert_dir": "/etc/pwx/cert/",
+          "ssl": {
+            "pem": "/etc/pwx/cert/arcus_client.pem",
+            "key": "/etc/pwx/cert/arcus_client.key"
+          },
+          "public": "appliance_pub.pem",
+          "private": "arcus_client.key",
+          "csr": "appliance_csr.pem",
+          "cert": "arcus_client.crt"
+        },
+        "activation": {
+          "public": "/etc/pwx/cert/activation_pub.pem",
+          "private": "/etc/pwx/cert/activation_priv.pem"
+        },
+        "server": {
+          "ssl": {
+            "truststore": {
+              "ks": "/etc/pwx/cert/truststore.ks",
+              "password": "arcusCA"
+            },
+            "pem": "/etc/pwx/cert/arcus_root.crt"
+          }
+        }
+      },
+      "server": {
+        "hostname": "0.0.0.0"
+      },
+      "logupload": {
+        "logfile_patterns": [
+            "/var/cores/diags.tar.gz",
+            "/var/cores/*.log",
+            "/var/cores/*.stack",
+            "/var/cores/*.heap",
+            "/var/cores/.alerts/alerts.log"
+        ],
+        "skip_patterns": [],
+        "additional_files": [],
+        "phonehome_sent": "/var/cache/phonehome.sent"
+      },
+      "xml_rpc": {},
+      "standalone": {
+        "version": "__CCM_TEMPLATE_VERSION__",
+        "controller_sn": "__CCM_TEMPLATE_SERIAL__",
+        "component_name": "__CCM_TEMPLATE_NAME__",
+        "product_name": "px",
+        "appliance_id_path": "__CCM_TEMPLATE_APPLIANCE_ID_PATH__"
+      }
+    }
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ccm
+  namespace: kube-system
+  labels:
+    name: ccm
+spec:
+  selector:
+    matchLabels:
+      name: ccm
+  minReadySeconds: 0
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        name: ccm
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: ccm/enabled
+                    operator: In
+                    values:
+                      - "true"
+                  - key: node-role.kubernetes.io/master
+                    operator: DoesNotExist
+      hostNetwork: false
+      hostPID: false
+      containers:
+        - name: telemetry
+          image: harshpx/ccm-service:2.1.0
+          imagePullPolicy: Always
+#          args:
+#            ["-k", "etcd:http://etc.fake.net:2379", "-c", "test_cluster", "-a",
+#             "-x", "kubernetes"]
+          env:
+            - name: "configFile"
+              value: "/etc/ccm/ccm.properties"
+#          livenessProbe:
+#            periodSeconds: 30
+#            initialDelaySeconds: 840 # allow image pull in slow networks
+#            httpGet:
+#              host: 127.0.0.1
+#              path: /status
+#              port: 9001
+#          readinessProbe:
+#            periodSeconds: 10
+#            httpGet:
+#              host: 127.0.0.1
+#              path: /health
+#              port: 9015
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: etcpwx
+              mountPath: /etc/pwx
+            - name: diagsdump
+              mountPath: /var/cores
+            - name: journalmount1
+              mountPath: /var/run/log
+              readOnly: true
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+            - name: timezone
+              mountPath: /etc/timezone
+              readOnly: true
+            - name: localtime
+              mountPath: /etc/localtime
+              readOnly: true
+            - name: ccm-config
+              mountPath: /etc/ccm
+      restartPolicy: Always
+      serviceAccountName: px-account
+      volumes:
+        - name: etcpwx
+          hostPath:
+            path: /etc/pwx
+        - name: diagsdump
+          hostPath:
+            path: /var/cores
+        - name: journalmount1
+          hostPath:
+            path: /var/run/log
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: timezone
+          hostPath:
+            path: /etc/timezone
+        - name: ccm-config
+          configMap:
+            name: ccm-config
+            items:
+              - key: ccm.properties
+                path: ccm.properties
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: px-account
+  namespace: kube-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: node-get-put-list-role
+rules:
+    - apiGroups: [ "" ]
+      resources: [ "secrets" ]
+      verbs: [ "get", "list" ]
+    - apiGroups: [ "" ]
+      resources: [ "nodes" ]
+      verbs: [ "watch", "get", "update", "list" ]
+    - apiGroups: [ "" ]
+      resources: [ "pods" ]
+      verbs: [ "delete", "get", "list", "watch", "update" ]
+    - apiGroups: [ "" ]
+      resources: [ "persistentvolumeclaims", "persistentvolumes" ]
+      verbs: [ "get", "list" ]
+    - apiGroups: [ "storage.k8s.io" ]
+      resources: [ "storageclasses" ]
+      verbs: [ "get", "list" ]
+    - apiGroups: [ "" ]
+      resources: [ "configmaps" ]
+      verbs: [ "get", "list", "update", "create" ]
+    - apiGroups: [ "extensions" ]
+      resources: [ "podsecuritypolicies" ]
+      resourceNames: [ "privileged" ]
+      verbs: [ "use" ]
+    - apiGroups: [ "portworx.io" ]
+      resources: [ "volumeplacementstrategies" ]
+      verbs: [ "get", "list" ]
+    - apiGroups: [ "stork.libopenstorage.org" ]
+      resources: [ "backuplocations" ]
+      verbs: [ "get", "list" ]
+    - apiGroups: [ "core.libopenstorage.org" ]
+      resources: [ "*" ]
+      verbs: [ "*" ]
+    - apiGroups: [ "" ]
+      resources: [ "events" ]
+      verbs: [ "create" ]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: node-role-binding
+subjects:
+  - kind: ServiceAccount
+    name: px-account
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: node-get-put-list-role
+  apiGroup: rbac.authorization.k8s.io
