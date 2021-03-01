@@ -6,7 +6,8 @@ metadata:
 data:
   ccm.properties: |-
     {
-      "product_name": "px",
+      "_comment": "TODO change below to px after initial bringup with Arcus",
+      "product_name": "flasharray",
        "features": {
          "env_info": "file",
          "cert_store": "file",
@@ -16,45 +17,17 @@ data:
          "upload": "enabled"
        },
       "cert": {
-        "check_interval_in_seconds": 30,
-        "key_algorithm": "RSA",
-        "key_size": 2048,
-        "sign_algorithm": "SHA1WithRSA",
-        "release": {
-          "production": {
-            "cert": "/etc/pwx/cert/rel_cert.pem",
-            "private": "/etc/pwx/cert/rel_priv.pem"
-          },
-          "staging": {
-            "cert": "/etc/pwx/cert/rel_cert_staging.pem",
-            "private": "/etc/pwx/cert/rel_priv_staging.pem"
-          }
-        },
-        "appliance": {
-         "current_cert_dir": "/etc/pwx/cert/",
-          "ssl": {
-            "pem": "/etc/pwx/cert/arcus_client.pem",
-            "key": "/etc/pwx/cert/arcus_client.key"
-          },
-          "public": "appliance_pub.pem",
-          "private": "arcus_client.key",
-          "csr": "appliance_csr.pem",
-          "cert": "arcus_client.crt"
-        },
         "activation": {
-          "public": "/etc/pwx/cert/activation_pub.pem",
-          "private": "/etc/pwx/cert/activation_priv.pem"
+              "private": "/dev/null"
         },
-        "server": {
-          "ssl": {
-            "truststore": {
-              "ks": "/etc/pwx/cert/truststore.ks",
-              "password": "arcusCA"
-            },
-            "pem": "/etc/pwx/cert/arcus_root.crt"
-          }
+        "registration_enabled": "false",
+        "appliance": {
+          "current_cert_dir": "/etc/pwx/ccm/cert"
         }
       },
+     "cloud": {
+       "array_loc_file_path": "/etc/pwx/ccm/location"
+     },
       "server": {
         "hostname": "0.0.0.0"
       },
@@ -118,9 +91,6 @@ spec:
         - name: telemetry
           image: harshpx/ccm-service:2.1.0
           imagePullPolicy: Always
-#          args:
-#            ["-k", "etcd:http://etc.fake.net:2379", "-c", "test_cluster", "-a",
-#             "-x", "kubernetes"]
           env:
             - name: "configFile"
               value: "/etc/ccm/ccm.properties"
