@@ -8,6 +8,9 @@ data:
     {
       "_comment": "TODO change below to px after initial bringup with Arcus",
       "product_name": "flasharray",
+       "logging": {
+         "array_info_path": "/var/log/array_info.json"
+       },
        "features": {
          "env_info": "file",
          "cert_store": "file",
@@ -18,7 +21,8 @@ data:
        },
       "cert": {
         "activation": {
-              "private": "/dev/null"
+              "private": "/dev/null",
+              "public": "/dev/null"
         },
         "registration_enabled": "false",
         "appliance": {
@@ -45,11 +49,14 @@ data:
       },
       "xml_rpc": {},
       "standalone": {
-        "version": "__CCM_TEMPLATE_VERSION__",
-        "controller_sn": "__CCM_TEMPLATE_SERIAL__",
-        "component_name": "__CCM_TEMPLATE_NAME__",
+        "version": "1.0.0",
+        "controller_sn": "SA-0",
+        "component_name": "SA-0",
         "product_name": "px",
-        "appliance_id_path": "__CCM_TEMPLATE_APPLIANCE_ID_PATH__"
+        "appliance_id_path": "/dev/null"
+      },
+      "proxy": {
+        "path": "/dev/null"
       }
     }
 ---
@@ -94,19 +101,15 @@ spec:
           env:
             - name: "configFile"
               value: "/etc/ccm/ccm.properties"
-#          livenessProbe:
-#            periodSeconds: 30
-#            initialDelaySeconds: 840 # allow image pull in slow networks
-#            httpGet:
-#              host: 127.0.0.1
-#              path: /status
-#              port: 9001
-#          readinessProbe:
-#            periodSeconds: 10
-#            httpGet:
-#              host: 127.0.0.1
-#              path: /health
-#              port: 9015
+          livenessProbe:
+            httpGet:
+              path: /1.0/status
+              port: 1970
+          readinessProbe:
+            periodSeconds: 10
+            httpGet:
+              path: /1.0/status
+              port: 1970
           securityContext:
             privileged: true
           volumeMounts:
@@ -119,7 +122,6 @@ spec:
               readOnly: true
             - name: varlog
               mountPath: /var/log
-              readOnly: true
             - name: timezone
               mountPath: /etc/timezone
               readOnly: true
