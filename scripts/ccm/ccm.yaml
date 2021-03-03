@@ -4,6 +4,7 @@ metadata:
   name: ccm-config
   namespace: kube-system
 data:
+  location: "internal"
   ccm.properties: |-
     {
       "_comment": "TODO change below to px after initial bringup with Arcus",
@@ -30,7 +31,7 @@ data:
         }
       },
      "cloud": {
-       "array_loc_file_path": "/etc/pwx/ccm/location"
+       "array_loc_file_path": "/etc/ccm/location"
      },
       "server": {
         "hostname": "0.0.0.0"
@@ -92,8 +93,6 @@ spec:
                       - "true"
                   - key: node-role.kubernetes.io/master
                     operator: DoesNotExist
-      hostNetwork: false
-      hostPID: false
       containers:
         - name: telemetry
           image: harshpx/ccm-service:2.1.0
@@ -157,6 +156,8 @@ spec:
             items:
               - key: ccm.properties
                 path: ccm.properties
+              - key: location
+                path: location
 ---
 kind: ServiceAccount
 apiVersion: v1

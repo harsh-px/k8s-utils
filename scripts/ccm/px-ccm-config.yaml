@@ -1,0 +1,48 @@
+{
+  "_comment": "TODO change below to px after initial bringup with Arcus",
+  "product_name": "flasharray",
+  "features": {
+    "env_info": "file",
+    "cert_store": "file",
+    "appliance_info": "config",
+    "scheduled_log_uploader":"disabled",
+    "config_reload": "file",
+    "upload": "enabled"
+  },
+  "cert": {
+    "activation": {
+      "private": "/dev/null",
+      "public": "/dev/null"
+    },
+    "registration_enabled": "false",
+    "appliance": {
+      "current_cert_dir": "/etc/pwx/ccm/cert"
+    }
+  },
+  "cloud": {
+    "array_loc_file_path": "/etc/pwx/ccm/location"
+  },
+  "server": {
+    "hostname": "0.0.0.0"
+  },
+  "logupload": {
+    "logfile_patterns": [
+        "/var/cores/diags.tar.gz",
+        "/var/cores/*.log",
+        "/var/cores/*.stack",
+        "/var/cores/*.heap",
+        "/var/cores/.alerts/alerts.log"
+    ],
+    "skip_patterns": [],
+    "additional_files": [],
+    "phonehome_sent": "/var/cache/phonehome.sent"
+  },
+  "xml_rpc": {},
+  "standalone": {
+    "version": "__CCM_TEMPLATE_VERSION__",
+    "controller_sn": "__CCM_TEMPLATE_SERIAL__",
+    "component_name": "__CCM_TEMPLATE_NAME__",
+    "product_name": "px",
+    "appliance_id_path": "__CCM_TEMPLATE_APPLIANCE_ID_PATH__"
+  }
+}
