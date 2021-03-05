@@ -13,11 +13,11 @@ data:
          "array_info_path": "/var/log/array_info.json"
        },
        "features": {
-         "env_info": "file",
-         "cert_store": "file",
          "appliance_info": "config",
-         "scheduled_log_uploader":"disabled",
+         "cert_store": "file",
          "config_reload": "file",
+         "env_info": "file",
+         "scheduled_log_uploader":"enabled",
          "upload": "enabled"
        },
       "cert": {
@@ -25,7 +25,7 @@ data:
               "private": "/dev/null",
               "public": "/dev/null"
         },
-        "registration_enabled": "false",
+        "registration_enabled": "true",
         "appliance": {
           "current_cert_dir": "/etc/pwx/ccm/cert"
         }
@@ -38,14 +38,21 @@ data:
       },
       "logupload": {
         "logfile_patterns": [
-            "/var/cores/diags.tar.gz",
-            "/var/cores/*.log",
+            "/var/cores/core*",
             "/var/cores/*.stack",
-            "/var/cores/*.heap",
-            "/var/cores/.alerts/alerts.log"
+            "/var/cores/*.heap"
         ],
         "skip_patterns": [],
-        "additional_files": [],
+        "additional_files": [
+            "/etc/pwx/config.json",
+            "/var/cores/diags.tar.gz",
+            "/var/cores/.alerts/alerts.log",
+            "/var/cores/px_etcd_watch.log",
+            "/var/cores/px_cache_mon.log",
+            "/var/cores/px_cache_mon_watch.log",
+            "/var/cores/px_healthmon_watch.log",
+            "/var/cores/px_event_watch.log"
+        ],
         "phonehome_sent": "/var/cache/phonehome.sent"
       },
       "xml_rpc": {},
@@ -53,8 +60,8 @@ data:
         "version": "1.0.0",
         "controller_sn": "SA-0",
         "component_name": "SA-0",
-        "product_name": "px",
-        "appliance_id_path": "/dev/null"
+        "product_name": "flasharray",
+        "appliance_id_path": "/etc/pwx/appliance_id"
       },
       "proxy": {
         "path": "/dev/null"
@@ -100,20 +107,22 @@ spec:
           env:
             - name: "configFile"
               value: "/etc/ccm/ccm.properties"
-          livenessProbe:
-            httpGet:
-              path: /1.0/status
-              port: 1970
-          readinessProbe:
-            periodSeconds: 10
-            httpGet:
-              path: /1.0/status
-              port: 1970
+#          livenessProbe:
+#            httpGet:
+#              path: /1.0/status
+#              port: 1970
+#          readinessProbe:
+#            periodSeconds: 10
+#            httpGet:
+#              path: /1.0/status
+#              port: 1970
           securityContext:
             privileged: true
           volumeMounts:
             - name: etcpwx
               mountPath: /etc/pwx
+            - name: varcache
+              mountPath: /var/cache
             - name: diagsdump
               mountPath: /var/cores
             - name: journalmount1
@@ -135,6 +144,9 @@ spec:
         - name: etcpwx
           hostPath:
             path: /etc/pwx
+        - name: varcache
+          hostPath:
+            path: /var/cache
         - name: diagsdump
           hostPath:
             path: /var/cores
